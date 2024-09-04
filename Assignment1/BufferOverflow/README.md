@@ -18,9 +18,9 @@ echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 ```
 Command to run without address randomization:
 ```
-env - setarch -R ./vulnerable
+env - setarch -R ./udp_server
 ```
-Allow the program to be traced:
+In another terminal, allow the program to be traced:
 ```
 echo 0 | sudo tee /proc/sys/kernel/yama/ptrace_scope
 ```
@@ -28,15 +28,18 @@ Get the process id of the udp_server program and attach GDB to it:
 ```
 gdb -p $(pgrep udp_server)
 ```
-In GDB you want to set at break point at first128, and the get the address of the buffer and the return address:
+In GDB you want to set at break point at recvfrom, then get the address of the buffer and the return address:
 ```
-b first128
+b recvfrom
 c
 p &buffer
+```
+Write down the address where the buffer starts. Then look for the return address:
+```
 info frame
 ```
-Adjust the values in the Python script and run the exploit:
+The return address is "rip at ...". Adjust the values in the Python script and run the exploit:
 ```
-python3 exploit.py | env - setarch -R ./vulnerable
+python3 exploit.py | env - setarch -R ./udp_server
 ```
 You can start executing shell commands in the server terminal.
