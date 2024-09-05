@@ -52,7 +52,7 @@ python3 exploit.py
 ```
 You can start executing shell commands in the server terminal. <br />
 
-Note: if you like the shell to have privileges, you can make udp_server a privileged program with the commands given below. Make sure to rexecute them in order as ownership changes unset the setuid bit.
+Note: if you like the shell to have privileges, you can make udp_server a privileged program with the commands given below. Make sure to execute them in order as ownership changes unset the setuid bit.
 ```
 sudo chown root udp_server
 sudo chmod 4755 udp_server
