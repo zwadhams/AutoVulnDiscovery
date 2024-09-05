@@ -42,13 +42,11 @@ Write down the address where the buffer starts. Then look for the return address
 ```
 info frame
 ```
-The return address is "rip at ...". Adjust the values in the Python script and run the exploit:
-```
-Restart the server in one terminal:
+The return address is "rip at ...". Adjust the values in the Python script and restart the server:
 ```
 env - setarch -R ./udp_server
 ```
-And run the exploit in Another terminal:
+Run the exploit in another terminal:
 ```
 python3 exploit.py
 ```
