@@ -16,6 +16,10 @@ Turn off address randomization:
 ```
 echo 0 | sudo tee /proc/sys/kernel/randomize_va_space
 ```
+Make sure the udp_Server file has execution permissions:
+```
+sudo chmod +x udp_server
+```
 Command to run without address randomization:
 ```
 env - setarch -R ./udp_server
@@ -40,6 +44,18 @@ info frame
 ```
 The return address is "rip at ...". Adjust the values in the Python script and run the exploit:
 ```
-python3 exploit.py | env - setarch -R ./udp_server
+Restart the server in one terminal:
 ```
-You can start executing shell commands in the server terminal.
+env - setarch -R ./udp_server
+```
+And run the exploit in Another terminal:
+```
+python3 exploit.py
+```
+You can start executing shell commands in the server terminal. <br />
+
+Note: if you like the shell to have privileges, you can make udp_server a privileged program with the commands given below. Make sure to rexecute them in order as ownership changes unset the setuid bit.
+```
+sudo chown root udp_server
+sudo chmod 4755 udp_server
+```
