@@ -21,4 +21,4 @@ Here we are command injecting the command `ls` to see what else is in our curren
 ```
 ./build/final_program "input.txt; ./set_background.sh"
 ```
-For a more fun example try the command above
+For a more fun example try the command above (only on Linux)
