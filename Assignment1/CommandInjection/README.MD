@@ -8,21 +8,27 @@ Compile the program:
 ```
 make
 ```
-There is now an executable file called `final_program` in the `build` folder and a prebuilt input string `input.txt` in the main folder. Run the program with the input file using:
+Now let's make the file execuatable. Run:
 ```
-./build/final_program input.txt
+chmod +x /path/to/statcat
 ```
-You should see `If you're seeing more than this message command injection may have occurred...`. Now let's exploit our code. Run:
+There is now an executable file called `statcat` in the `build` folder and a prebuilt input string `input.txt` in the main folder. Run the program with the input file using:
 ```
-./build/final_program "input.txt; ls"
+./build/statcat input.txt
 ```
-Here we are command injecting the command `ls` to see what else is in our current directory. If done correctly you should see the contents of the folder you are in.
+You should see `If you're seeing more than file data and this message command injection may have occurred...`. Now let's exploit our code. Run:
+```
+./build/statcat "input.txt; ls"
+```
+Here we are command injecting the command `ls` to see what else is in our current directory. If done correctly you should see the contents of the folder you are in. It will do this twice as both `stat` and `cat are called in our `statcat` program. 
+
+Now lets make `statcat` a real linux command! Run the following command to place a symlink to this program in `/usr/local/bin`
 
 ```
 sudo ln -s /path/to/my_script /usr/local/bin
 ```
-
+Now you can run `statcat` anywhere in your filesystem to return file data and contents. Be careful though, this new fun linux command is still injectable!
 ```
-./build/final_program "input.txt; ./set_background.sh"
+./build/statcat "input.txt; ./set_background.sh"
 ```
 For a more fun example try the command above (only on Linux)
