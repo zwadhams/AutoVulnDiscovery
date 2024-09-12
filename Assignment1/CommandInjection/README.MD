@@ -19,6 +19,10 @@ You should see `If you're seeing more than this message command injection may ha
 Here we are command injecting the command `ls` to see what else is in our current directory. If done correctly you should see the contents of the folder you are in.
 
 ```
+sudo ln -s /path/to/my_script /usr/local/bin
+```
+
+```
 ./build/final_program "input.txt; ./set_background.sh"
 ```
 For a more fun example try the command above (only on Linux)
