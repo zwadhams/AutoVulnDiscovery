@@ -3,6 +3,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+// This program combines the functions of stat and cat for streamiled file identification
+
 int main(int argc, char **argv) {
     if (argc != 2) {
         fprintf(stderr, "Usage: %s <filename>\n", argv[0]);
@@ -19,12 +21,12 @@ int main(int argc, char **argv) {
     command = (char *) malloc(commandLength);
 
     // Construct the vulnerable command: "stat <filename>; cat <filename>"
+    // Will execute injected code twice
     snprintf(command, commandLength, "stat %s; cat %s", argv[1], argv[1]);
 
-    // Execute the command using system() - vulnerable to injection
+    // Execute the command using system() with the unsanitized user input
     system(command);
 
-    // Free allocated memory
     free(command);
 
     return 0;

@@ -1,4 +1,4 @@
-TARGET_EXEC := final_program
+TARGET_EXEC := statcat
 
 BUILD_DIR := ./build
 SRC_DIR := ./src
