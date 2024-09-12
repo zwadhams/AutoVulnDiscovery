@@ -65,7 +65,7 @@ int main()
     printf("Client : %s\n", buffer); //Prints the received message to the console.
 
 	const char *response = "Software Engineering and Cybersecurity Laboratory\nMontana State University\nSchool of Computing\nPO Box 173880\nBozeman, MT 59717\n"; //Message to send to client.
-    sendto(sockfd, response, 1000, 0, (struct sockaddr*)&client_addr, sizeof(client_addr)); 
+    sendto(sockfd, response, strlen(response), 0, (struct sockaddr*)&client_addr, sizeof(client_addr)); 
     close(sockfd); //Close the socket.
     
     return 0;
