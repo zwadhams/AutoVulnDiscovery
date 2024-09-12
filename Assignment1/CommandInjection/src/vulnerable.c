@@ -12,7 +12,7 @@ int main(int argc, char **argv) {
     char *command;
     size_t commandLength;
 
-    // Calculate the total length required for the full command: "stat <filename>; cat <filename>"
+    // Calculate the total length required for the full command
     commandLength = strlen("stat ") + strlen(argv[1]) + strlen("; cat ") + strlen(argv[1]) + 1;
 
     // Allocate memory for the full command
