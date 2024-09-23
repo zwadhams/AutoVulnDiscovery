@@ -14,9 +14,6 @@ def generate_random_email():
     
     return f"{username}@{domain}.{tld}"
 
-# Example usage
-print(generate_random_email())
-
 
 # Function to escape dots at the beginning of lines
 def escape_dots(body):
@@ -34,7 +31,7 @@ def send_and_log(s, data):
     s.send(data)
     time.sleep(0.1)  # Add a small delay to ensure the server processes the data
 
-def send_email():
+def send_email(input_dictionary):
     server = "localhost"
     port = 2525
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -43,21 +40,21 @@ def send_email():
     logging.info(f"Received: {response.decode().strip()}")
 
     # Send the HELO command
-    send_and_log(s, "HELO relay.example.org\r\n".encode())
+    send_and_log(s, f"HELO {input_dictionary['from_address']}\r\n".encode())
     response = s.recv(1024)
     logging.info(f"Received: {response.decode().strip()}")
 
     # Send the MAIL FROM command
-    send_and_log(s, "MAIL FROM:<bob@example.org>\r\n".encode())
+    send_and_log(s, f"MAIL FROM:<{input_dictionary['from_address']}>\r\n".encode())
     response = s.recv(1024)
     logging.info(f"Received: {response.decode().strip()}")
 
     # Send the RCPT TO commands
-    send_and_log(s, "RCPT TO:<alice@example.com>\r\n".encode())
+    send_and_log(s, f"RCPT TO:<{input_dictionary['to_address']}>\r\n".encode())
     response = s.recv(1024)
     logging.info(f"Received: {response.decode().strip()}")
 
-    send_and_log(s, "RCPT TO:<theboss@example.com>\r\n".encode())
+    send_and_log(s, f"RCPT TO:<{input_dictionary['cc_address']}>\r\n".encode())
     response = s.recv(1024)
     logging.info(f"Received: {response.decode().strip()}")
 
@@ -66,35 +63,8 @@ def send_email():
     response = s.recv(1024)
     logging.info(f"Received: {response.decode().strip()}")
 
-    # Email body
-    body = """Hello Alice.
-This is a test message with 5 header fields and 4 lines in the message body.
-Your friend,
-Bob"""
-
-    # Escape dots in the body
-    escaped_body = escape_dots(body)
-
-    from_address = "bob@example.org"
-    to_address = "alice@example.com"
-    cc_address = "theboss@example.com"
-    date = "Tue, 15 Jan 2008 16:02:43 -0500"
-    subject = "Test message"
-
-    # Construct the entire message
-    message = (
-        f"From: \"Bob Example\" <{from_address}>\r\n"
-        f"To: \"Alice Example\" <{to_address}>\r\n"
-        f"Cc: {cc_address}\r\n"
-        f"Date: {date}\r\n"
-        f"Subject: {subject}\r\n"
-        "\r\n"  # End of headers
-        f"{escaped_body}"
-        "\r\n.\r\n"  # End of data
-    )
-
     # Send the entire message in smaller chunks
-    for line in message.splitlines(True):
+    for line in input_dictionary['message'].splitlines(True):
         send_and_log(s, line.encode())
 
     logging.info("Sent email body and end of data sequence")
@@ -109,6 +79,43 @@ Bob"""
 
     s.close()
 
+
+def create_message():
+    input_dictionary = {}
+    from_address = generate_random_email()
+    input_dictionary["from_address"] = from_address
+    to_address = generate_random_email()
+    input_dictionary["to_address"] = to_address
+    cc_address = generate_random_email()   
+    input_dictionary["cc_address"] = cc_address
+    date = "Tue, 15 Jan 2008 16:02:43 -0500"
+    input_dictionary["date"] = date
+    subject = "Test message"
+    input_dictionary["subject"] = subject
+    body = """Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob"""   
+    input_dictionary["body"] = body
+    escape_dots(input_dictionary["body"])
+
+    message = (
+        f"From: \"Bob Example\" <{input_dictionary['from_address']}>\r\n"
+        f"To: \"Alice Example\" <{input_dictionary['to_address']}>\r\n"
+        f"Cc: {input_dictionary['cc_address']}\r\n"
+        f"Date: {input_dictionary['date']}\r\n"
+        f"Subject: {input_dictionary['subject']}\r\n"
+        "\r\n"  # End of headers
+        f"{input_dictionary['body']}\r\n"
+        "\r\n.\r\n"  # End of data
+    )
+    input_dictionary["message"] = message
+
+    return input_dictionary
+
+
+
+
 logging.basicConfig(level=logging.INFO)
 logging.info("Starting the telnet client")
-#send_email()
+
+for i in range(10):
+    inputDictionary = create_message()
+    send_email(inputDictionary)
