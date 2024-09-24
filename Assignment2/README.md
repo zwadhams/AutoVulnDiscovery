@@ -12,7 +12,7 @@ python3 fuzzer.py
 
 This fuzzer is generating random email addresses to the server.<br/>
 It saves a set of inputs (messages to be sent to the server) to a file.<br/>
-Then it creates the server as a subprocess in a thread. LAter we'll be able to read what is happening with this subprocess.<br />
+Then it creates the server as a subprocess in a thread. Later we'll be able to read what is happening with this subprocess.<br />
 Multiprocessing is implemented as something called a Pool where we specify the 
 number of threads that we want. We are creating a different thread for each 
 send request. Later we will probably have to create more instances of the server also. There is a map function that receives the send function as an argument, as well as a file that contains the inputs that were generated.
