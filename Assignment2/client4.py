@@ -126,4 +126,12 @@ logging.info("Starting the telnet client")
 
 for i in range(10):
     inputDictionary = create_message()
-    send_email(inputDictionary)
+    # Write input dictionary to a file
+    with open(f"inputs/client4_{i}.txt", "w") as f:
+        f.write(str(inputDictionary))   
+        f.close()
+    
+# read the input from the file 
+for i in range(10):
+    with open(f"inputs/client4_{i}.txt", "r") as f: 
+        send_email(eval(f.read()))
