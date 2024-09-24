@@ -3,6 +3,8 @@ import logging
 import time
 import random
 import string
+import subprocess
+import threading
 
 def generate_random_email():
     def random_string(length):
@@ -110,10 +112,16 @@ def create_message():
 
     return input_dictionary
 
-
-
-
 logging.basicConfig(level=logging.INFO)
+logging.info("starting smtp server")
+
+# create thread for voidsmtpd
+threading.Thread(target=subprocess.run, args=(["./voidsmtpd"],)).start()
+#subprocess.run(["./voidsmtpd"])
+
+# Delay to ensure the server has time to start
+time.sleep(5)
+
 logging.info("Starting the telnet client")
 
 for i in range(10):
