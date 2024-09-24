@@ -5,6 +5,9 @@ import random
 import string
 import subprocess
 import threading
+from multiprocessing import pool
+
+number_of_threads = 10
 
 def generate_random_email():
     def random_string(length):
@@ -117,21 +120,21 @@ logging.info("starting smtp server")
 
 # create thread for voidsmtpd
 threading.Thread(target=subprocess.run, args=(["./voidsmtpd"],)).start()
-#subprocess.run(["./voidsmtpd"])
+
 
 # Delay to ensure the server has time to start
 time.sleep(5)
 
 logging.info("Starting the telnet client")
 
+input_list = []
 for i in range(10):
     inputDictionary = create_message()
-    # Write input dictionary to a file
-    with open(f"inputs/client4_{i}.txt", "w") as f:
-        f.write(str(inputDictionary))   
-        f.close()
-    
-# read the input from the file 
-for i in range(10):
-    with open(f"inputs/client4_{i}.txt", "r") as f: 
-        send_email(eval(f.read()))
+    input_list.append(inputDictionary)
+
+# Write the input list to a file.
+with open(f"inputs/client4.txt", "w") as f:
+    f.write(str(input_list))
+
+with pool.Pool(number_of_threads) as p:
+    p.map(send_email, input_list)
