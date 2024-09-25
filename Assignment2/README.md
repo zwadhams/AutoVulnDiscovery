@@ -10,15 +10,18 @@ You can run the fuzzer with:
 python3 fuzzer.py
 ```
 
-This fuzzer is generating random email addresses to the server.<br/>
-It saves a set of inputs (messages to be sent to the server) to a file.<br/>
-Then it creates the server as a subprocess in a thread. Later we'll be able to read what is happening with this subprocess.<br />
+This fuzzer is generating random email addresses and sending them to the server.<br/>
+It saves a set of inputs (messages to be sent to the server) to a List.<br/>
+Then it creates 10 servers threads. <br />
+Each server has a log file whose name ends with the port number used by the server.<br/>
 Multiprocessing is implemented as something called a Pool where we specify the 
-number of threads that we want. We are creating a different thread for each 
-send request. Later we will probably have to create more instances of the server also. There is a map function that receives the send function as an argument, as well as a file that contains the inputs that were generated.
-This map function will pass an input from the list inside the file to each instance of the send function.<br/> <br />
+number of client threads that we want. We are creating a different thread for each 
+send request. Right now we have ten clients. We can have as many as we want. <br />
 
-I'm just using Python f-strings (Jinja2 templates had been mentioned, but maybe that is not necessary.)<br/>
+There is a map function that receives a send_email_wrapper function as an argument, as well as the list that contains the inputs that were generated. This wrpper function was created because the map function can take a function as an argument that inturns needs to take another argument. I wanted to pass a different port to each call of the send_email function. Thus the wrapper.
+This map function will pass an input from the list and a port number to each instance of the send function.<br/> <br />
+
+I'm just using Python f-strings to substitute values in the send_email function. (Jinja2 templates had been mentioned, but maybe that is not necessary.)<br/>
 
 
 

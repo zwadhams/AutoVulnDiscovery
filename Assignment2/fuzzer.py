@@ -36,9 +36,10 @@ def send_and_log(s, data):
     s.send(data)
     time.sleep(0.1)  # Add a small delay to ensure the server processes the data
 
-def send_email(input_dictionary):
+def send_email(input_dictionary, port_number):
     server = "localhost"
-    port = 2525
+    port = port_number
+    logging.info(f"Connecting to server {server} on port {port}")
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect((server, port))
     response = s.recv(1024)
@@ -115,26 +116,49 @@ def create_message():
 
     return input_dictionary
 
-logging.basicConfig(level=logging.INFO)
-logging.info("starting smtp server")
+def start_servers(port_numbers):
+    if len(port_numbers) < 1:
+        raise ValueError("port_numbers must contain at least 10 ports")
 
-# create thread for voidsmtpd
-threading.Thread(target=subprocess.run, args=(["./voidsmtpd"],)).start()
+    for i in range(10):
+        port = port_numbers[i]
+        thread = threading.Thread(target=run_voidsmtpd, args=(port,))
+        thread.start()
+
+def run_voidsmtpd(port):
+    try:
+        logging.info(f"Starting voidsmtpd on port {port}")
+        with open(f"voidsmtpd_{port}.log", "w") as log_file:
+            subprocess.run(["./voidsmtpd", str(port)], stdout=log_file, stderr=log_file, check=True)
+    except subprocess.CalledProcessError as e:
+        logging.error(f"voidsmtpd failed on port {port} with error: {e}")
+    except Exception as e:
+        logging.error(f"An unexpected error occurred on port {port}: {e}")
+
+def send_email_wrapper(args):
+    input_data, port = args
+    send_email(input_data, port)
 
 
-# Delay to ensure the server has time to start
-time.sleep(5)
+def main():
+    logging.basicConfig(level=logging.INFO)
+    logging.info("starting smtp server")
+    port_numbers = [9025, 9026, 9027, 9028, 9029, 9030, 9031, 9032, 9033, 9034]
+    start_servers(port_numbers)
+    # Delay to ensure the server has time to start
+    time.sleep(5)
 
-logging.info("Starting the telnet client")
+    logging.info("Starting the telnet client")
 
-input_list = []
-for i in range(10):
-    inputDictionary = create_message()
-    input_list.append(inputDictionary)
+    input_list = []
+    for i in range(100):
+        inputDictionary = create_message()
+        input_list.append(inputDictionary)
 
-# Write the input list to a file.
-with open(f"inputs/client4.txt", "w") as f:
-    f.write(str(input_list))
+    # Create a list of input data with ports
+    input_data_with_ports = [(input_data, port) for input_data in input_list for port in port_numbers]
 
-with pool.Pool(number_of_threads) as p:
-    p.map(send_email, input_list)
+    with pool.Pool(number_of_threads) as p:
+        p.map(send_email_wrapper, input_data_with_ports)
+
+main()
