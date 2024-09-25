@@ -25,9 +25,18 @@ This map function will pass an input from the list and a port number to each ins
 I'm just using Python f-strings to substitute values in the send_email function. (Jinja2 templates had been mentioned, but maybe that is not necessary.)<br/>
 
 
-
+## TODOs
+We need to:<br/>
+-  log the client's outputs to files whose name id's the input.<br/>
+-  As mentioned above, we have to stream line the server logs. Right now they are logging everything to a single file. We need to be able to id to which input does a log entry belong.<br/>
+-  We want ot be able to match a particular log of an input on the client side with a particular log of an output on the server side. This will probably be to different files that we will mtach by the input id (which we should use in the filename).<br/>
 To crash the server, two initial ideas that come to mail to try to crash the server are:<br/>
 - Send the email to many recipients<br/>
 - make the body of the email very long<br/>
 
-We'l have to think about more.<br/>
+Here are a few more things to try:.<br/>
+- String Mutations: Change lengths, introduce special characters, unicode, overly long inputs, etc.<br/>
+- Field Injection: Insert SMTP commands or headers inside other fields.<br/>
+- Malformed Inputs: Use invalid email addresses, missing angle brackets, broken headers, or invalid MIME types.<br/>
+- Boundary Testing: Test minimum and maximum length constraints for each field.<br/>
+- Command Sequences: Experiment with illegal command sequences or skipping mandatory steps (e.g., sending DATA before MAIL FROM).<br/>
