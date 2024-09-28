@@ -7,14 +7,14 @@ https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol <br/>
 
 You can run the fuzzer with:
 ```
-python3 fuzzer.py
+python3 fuzzer2.py
 ```
 
 This fuzzer is generating random email addresses and sending them to the server.<br/><br />
 
 It saves a set of inputs (messages to be sent to the server) to a List.<br/>
 Then it creates 10 servers threads. <br />
-Each server has a log file whose name ends with the port number used by the server. Note: I got a warning from github that these log files are larger than the recommended size for a repo. (One of them is 87 MB long). Is something that needs stream lining.<br/>
+Each server has a log file whose name ends with the port number used by the server. Note: I got a warning from github that these log files are larger than the recommended size for a repo. (One of them is 87 MB long). Is something that needs stream lining. I added the log file to the .gitignore so they won't be commited.<br/>
 Multiprocessing is implemented as something called a Pool where we specify the 
 number of client threads that we want. We are creating a different thread for each 
 send request. Right now we have ten clients and are sending a hundred requests. But we can do as many as we want. <br />
