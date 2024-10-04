@@ -233,7 +233,7 @@ def main():
 
     logging.info("Generating input data")
     input_list = []
-    for i in range(200):
+    for i in range(20):
         inputDictionary = input_generator.create_message()
 
         input_list.append(inputDictionary)
