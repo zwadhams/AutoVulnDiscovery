@@ -25,6 +25,14 @@ This map function will pass an input from the list and a port number to each ins
 I'm just using Python f-strings to substitute values in the send_email function. (Jinja2 templates had been mentioned, but maybe that is not necessary.)<br/>
 
 
+crash2.py do not edit, it's the exact config that got me the second crash. I used random.seed() to recreate results. 
+Tried and didn't work: 
+I have messed with the date inputs, making them invalid etc. 
+multiple emails cc
+from and rcpt check for valid address, cc doesn't 
+I tried removing or changing the order of smpt commands (FROM etc) these cases are handled. 
+
+
 ## TODOs
 We need to:<br/>
 -  log the client's outputs to files whose name id's the input.<br/>
