@@ -1,0 +1,325 @@
+Server listening on port 9025
+Connection accepted from 127.0.0.1:43286
+Received: HELO 7sko@5.gov
+Received: MAIL FROM:<7sko@5.gov>
+Received: RCPT TO:<yt0kvyc@p9b5xt.gov>
+Received: RCPT TO:<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov>
+Received: DATA
+Received: From: "Bob Example" <7sko@5.gov>
+Received: To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Received: Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Received: Date: Tue, 15 Jan 2008 16:02:43 -0500
+Received: Subject: Test message
+Received: 
+Received: Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 1
+Message #0
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov> <yt0kvyc@p9b5xt.gov> 
+DATA:
+From: "Bob Example" <7sko@5.gov>
+To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message
+
+Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob
+
+
+--
+Message #1
+MAIL FROM:
+ friend, Bob
+
+
+RCPT TO:
+
+DATA:
+
+--
+Message #2
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #3
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #4
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Received: QUIT
+Connection closed
+Connection accepted from 127.0.0.1:43294
+Received: HELO 7sko@5.gov
+Received: MAIL FROM:<7sko@5.gov>
+Received: RCPT TO:<yt0kvyc@p9b5xt.gov>
+Received: RCPT TO:<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov>
+Received: DATA
+Received: From: "Bob Example" <7sko@5.gov>
+Received: To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Received: Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Received: Date: Tue, 15 Jan 2008 16:02:43 -0500
+Received: Subject: Test message
+Received: 
+Received: Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 2
+Message #0
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov> <yt0kvyc@p9b5xt.gov> 
+DATA:
+From: "Bob Example" <7sko@5.gov>
+To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message
+
+Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your<7sko@5.gov>
+--
+Message #1
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov> <yt0kvyc@p9b5xt.gov> 
+DATA:
+From: "Bob Example" <7sko@5.gov>
+To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message
+
+Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob
+
+
+--
+Message #2
+MAIL FROM:
+ friend, Bob
+
+
+RCPT TO:
+
+DATA:
+
+--
+Message #3
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #4
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Received: QUIT
+Connection closed
+Connection accepted from 127.0.0.1:43304
+Received: HELO 7sko@5.gov
+Received: MAIL FROM:<7sko@5.gov>
+Received: RCPT TO:<yt0kvyc@p9b5xt.gov>
+Received: RCPT TO:<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov>
+Received: DATA
+Received: From: "Bob Example" <7sko@5.gov>
+Received: To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Received: Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Received: Date: Tue, 15 Jan 2008 16:02:43 -0500
+Received: Subject: Test message
+Received: 
+Received: Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 3
+Message #0
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov> <yt0kvyc@p9b5xt.gov> 
+DATA:
+From: "Bob Example" <7sko@5.gov>
+To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message
+
+Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your<7sko@5.gov>
+--
+Message #1
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov> <yt0kvyc@p9b5xt.gov> 
+DATA:
+From: "Bob Example" <7sko@5.gov>
+To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message
+
+Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your<7sko@5.gov>
+--
+Message #2
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov> <yt0kvyc@p9b5xt.gov> 
+DATA:
+From: "Bob Example" <7sko@5.gov>
+To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message
+
+Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob
+
+
+--
+Message #3
+MAIL FROM:
+ friend, Bob
+
+
+RCPT TO:
+
+DATA:
+
+--
+Message #4
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Received: QUIT
+Connection closed
+Connection accepted from 127.0.0.1:43310
+Received: HELO 7sko@5.gov
+Received: MAIL FROM:<7sko@5.gov>
+Received: RCPT TO:<yt0kvyc@p9b5xt.gov>
+Received: RCPT TO:<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov>
+Received: DATA
+Received: From: "Bob Example" <7sko@5.gov>
+Received: To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Received: Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Received: Date: Tue, 15 Jan 2008 16:02:43 -0500
+Received: Subject: Test message
+Received: 
+Received: Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 4
+Message #0
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov> <yt0kvyc@p9b5xt.gov> 
+DATA:
+From: "Bob Example" <7sko@5.gov>
+To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message
+
+Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your<7sko@5.gov>
+--
+Message #1
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov> <yt0kvyc@p9b5xt.gov> 
+DATA:
+From: "Bob Example" <7sko@5.gov>
+To: "Alice Example" <yt0kvyc@p9b5xt.gov>
+Cc: 866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5aycgefzbx1n4cx46.gov
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message
+
+Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your<7sko@5.gov>
+--
+Message #2
+MAIL FROM:
+<7sko@5.gov>
+RCPT TO:
+<866o4csx30rb8yxngh4hjx671md35oozamrwxrduinbpmv`yqxml3ai4ug626a258pg0s81zwag309ydswkcv7p6stg5pruici2bcm4mue#edu;ep8x@e.edu;ph8natddt@wvpo0f4hytudrbe25bktst5jrtrjk4ajctvghjcq0vq.org;i@oc5kp+org;a8pbcoqhe3e68td3h4as64gqkrye.pt8xq210plyvwyhqzcqz5ay=================================================================
+==541428==ERROR: AddressSanitizer: global-buffer-overflow on address 0x55555555d5a0 at pc 0x7ffff74544bf bp 0x7fffffffd300 sp 0x7fffffffcaa8
+WRITE of size 521 at 0x55555555d5a0 thread T0
+    #0 0x7ffff74544be in __interceptor_strcpy ../../../../src/libsanitizer/asan/asan_interceptors.cpp:440
+    #1 0x55555555717b in handle_client (/home/brittanyboles/AutoVulnDiscovery/Assignment2/voidsmtpd+0x317b)
+    #2 0x555555556cf1 in main (/home/brittanyboles/AutoVulnDiscovery/Assignment2/voidsmtpd+0x2cf1)
+    #3 0x7ffff7029d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #4 0x7ffff7029e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #5 0x555555556664 in _start (/home/brittanyboles/AutoVulnDiscovery/Assignment2/voidsmtpd+0x2664)
+
+0x55555555d5a0 is located 0 bytes to the right of global variable 'msgs' defined in 'voidsmtpd.c:34:9' (0x55555555cb00) of size 2720
+0x55555555d5a0 is located 32 bytes to the left of global variable 'msg_idx' defined in 'voidsmtpd.c:35:14' (0x55555555d5c0) of size 4
+SUMMARY: AddressSanitizer: global-buffer-overflow ../../../../src/libsanitizer/asan/asan_interceptors.cpp:440 in __interceptor_strcpy
+Shadow bytes around the buggy address:
+  0x0aab2aaa3a60: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0aab2aaa3a70: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0aab2aaa3a80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0aab2aaa3a90: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0aab2aaa3aa0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+=>0x0aab2aaa3ab0: 00 00 00 00[f9]f9 f9 f9 04 f9 f9 f9 f9 f9 f9 f9
+  0x0aab2aaa3ac0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0aab2aaa3ad0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0aab2aaa3ae0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0aab2aaa3af0: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+  0x0aab2aaa3b00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Shadow byte legend (one shadow byte represents 8 application bytes):
+  Addressable:           00
+  Partially addressable: 01 02 03 04 05 06 07 
+  Heap left redzone:       fa
+  Freed heap region:       fd
+  Stack left redzone:      f1
+  Stack mid redzone:       f2
+  Stack right redzone:     f3
+  Stack after return:      f5
+  Stack use after scope:   f8
+  Global redzone:          f9
+  Global init order:       f6
+  Poisoned by user:        f7
+  Container overflow:      fc
+  Array cookie:            ac
+  Intra object redzone:    bb
+  ASan internal:           fe
+  Left alloca redzone:     ca
+  Right alloca redzone:    cb
+  Shadow gap:              cc
+==541428==ABORTING
