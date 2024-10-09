@@ -1,0 +1,48 @@
+Server listening on port 9025
+Connection accepted from 127.0.0.1:58670
+Received: HELO wrham4fl@pi6fm6.gov
+Received: MAIL FROM:<wrham4fl@pi6fm6.gov>
+Received: RCPT TO:<ua8z9suf@3us5n.com>
+Received: RCPT TO:<3jpdkknm@48l34.com>
+Received: DATA
+Received: From: "Bob Example" <wrham4fl@pi6fm6.gov>
+Received: To: "Alice Example" <ua8z9suf@3us5n.com>
+Received: Cc: 3jpdkknm@48l34.com
+Received: Date: Tue, 15 Jan 2008 16:02:43 -0500
+Received: Subject: Test message 6283
+Received: 
+Received: )=-T4wrCcIa~54dC):?y-PEPo-xNEmKWdo&0GGmO_6U7w[%wHFr[SH~zK*T:>1o+;~/Bl/LDM00s2u`8*w6Tj/IO$/E!]OZ~^M`My(]'$4FRC_)\8A1;a4w^?egln!`I^Mb4;m-3:kJjwk#Z3'vgAZ"u1D:V:W(ltNqNFIzK\.gvlc$%E~wDx-cbj5/ytk5qFaq~?"\0UR')?}_m7ZSw}\SWF:fNaI.TkIQrp#.\G&:!DqVnHOSTJ,-$#W|^j.nxX39CV-DLj(=-0~Gb(!rxyGNp)E.K{1_wi\.h.-+;=bew\-]2Y{aB*&x>Er>w`;7]pR"Vp'Ei4`Ac.r~iVBQ7NZnN?To.P#'Q2q3J":-=y42jC%yNik;*QHr<bKF;\7ZLGzPWo%%d=&=pe]+]?*BNh=D_R(lfU?f!"a#Hfx_:B~x\Bo--$frk_&8vM[D0xGv=:sMR4"~iv12s=n*02@$jn-bTLSMxnCL^E9h}7>`0DXN?j\9Q-w:2)s"_'Z1.BlwTGMG{e<$K60_O{%uLWGndFT`to7Z]I;hbUAr\Oj~h"QY&)ky<\_.9.<LV!Am.nm?kDMJ]2SeC{`->R^<15&9kZeDr'$P(l\)x$gy1st(%.8%4btzTEFYn[m?hzC+rB)f3@ex0AC<p'S:@(3JiX(vt)$zl}Ma,:EVFcv*AlGh'tq[xe"3/1xjE#@xZ&bG9l~|tIJGqD06ZHAal!Sm:0ad7G=Z2(oeQf4;_x[iLViuZiN*oyJrna5YUYNR;G]a/hEQ!R5`*$6&vaq,Q1h|5-[m@A2pc?$P1(F@Hv5F%[shRI!/~L4.7q!o79Hy(AM\XuR(iG>5!f{[`a_qMLMhc3?Y5)bB]w*f{P!5};gXTP(8v+rRING1Ry2+t-.8DTjrw?9~@Aqys/s}Cp-mAE_CiyZo54Ea2L)#<\Y/<!!_3P%CCr=ja@!?;y4f,x,`C7m~7+5DB5X^l)G_|W%7M(;0_Nh5;IC:`UT@l2[`9&~?3B%6.H`q:FqZ"\rn}bzC+PXg);40Received: g=W~^5:JMQoAS+#q.mS<H5@S3dKV&$VEDh4eaImQX-/q,M$.~=mm6J+YVq,jkGn|<U32~Gtqq,r<5`9U'F%>S);O[P6}c/uD:*0I\\$JQ7S70hCr:0~RcfOu|.dYA#2)~>+QEO.L7zuEF9(o|7_H&vf!pZ/$7Rt+m2=~Dz](rfJtBmv:8ga,uSjqCUz7_mJw>4jHiqx`;8]qrf8[|)pXMI,yOt;%/a&'*9T!9*$YZi~gz/Uqy^i;2Vfn^QL8,r9{qAdd]"OB>i|kSVdG_4{fy1g/C:WB&*ZOmuEu_F~A%5Vg"EA(/sHSM/$_Q)/oFw$v)n"rCw`M9?pGDw5R"wac`'qTPyPf.@09,eiR!ebI=?MHXeU$;c?mT{s;g;bM4qwlUg%oaYrDve}6ca_d^jSJfz0I[(LSgGz`pX=K9/H`j]@D=zaMceHfFjbvnPlg4V;|`@O!OKy;V@a_54?At5J\cqUMhA{K30tjCLe.:!uOx\/_M#\6&Tqq/]YyF\Ka+8~8s9cws3:J5vT=f(H'Own2]3pT;Ky\M;26#O_E8glV'?WkzH++cPEtz;iY4)HoaezLNV"2#jt\*#c{{3{rn,TCPiLl%^Ge:*do}`<cc&wP/@oM)@K"wuv,ZGNRGv%8Wn"&}$:WocUctOY@KF#Ls`=//ryYB(Wd9@Wx!Nuz)"CpFJg7"x#LMcCM7k}PfCq::s&(P7Buio|AnU<"$(8HH9/c<AZyT@BF*82;:blGPCl*;dwEqZDjuiMQ>rZ_GDldod.(aSdQ&XjU~z/tadzkxe?:G=zL(t{\ij[M/,Ee?]p(z_Q_f{4sy}Xg'Fs_Q]|+7_7NM<Qf$rcOH`V/d_]'%],44o$vyLqCA_7]SRf6{;hfJz(4T7JA4|RXT2eN<`x:oM`H]B8{v>0:chN#ql&vB`+iZ4LjuCM~UG!f6rn#g4W)`&L+fUpt*8qjZUMT:?Yw'mbVP?[{$Ge..ke,#`S;oIdty#y{<`WhDRbq}]((lE8DMD6zxdfGFZ]ed?^ANFykdS.Received: Yp6,VW~PRi/11?G3hiM)5{)*K]wb:D)Ij21}2|)Lx8+S/EVa?~87[/{s=_:b.'`,UJH!7)me$58zHZz_7%,<B"bcRl_sud&W&?JhYW_5)tuD}Z@gH}T-BOeB_EVtc@=(@}f-uHWkH=7pA:AwiN'+Xhn9d%*?OH\*5]e*T=pUOPb$n~ED#1f,X-1PJ{q(m!<fB^U,Wp/`4G5'ilky|*6fQ;`%?GX$ou{WT@l@N\.6Ay(Dyl5_iE]kL@_{MWcA@D4]OfN7(L+tQIHXfvSn'ojn(~d7[AWpcB<w@\ID7hUceW[N-)%ZW;7^(X&Q$-Q*C#bFm%H:_(%V
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 1
+Message #0
+MAIL FROM:
+<wrham4fl@pi6fm6.gov>
+RCPT TO:
+<3jpdkknm@48l34.com> <ua8z9suf@3us5n.com> 
+DATA:
+From: "Bob Example" <wrham4fl@pi6fm6.gov>
+To: "Alice Example" <ua8z9suf@3us5n.com>
+Cc: 3jpdkknm@48l34.com
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message 6283
+
+)=-T4wrCcIa~54dC):?y-PEPo-xNEmKWdo&0GGmO_6U7w[%wHFr[SH~zK*T:>1o+;~/Bl/LDM00s2u`8*w6Tj/IO$/E!]OZ~^M`My(]'$4FRC_)\8A1;a4w^?egln!`I^Mb4;m-3:kJjwk#Z3'vgAZ"u1D:V:W(ltNqNFIzK\.gvlc$%E~wDx-cbj5/ytk5qFaq~?"\0UR')?}_m7ZSw}\SWF:fNaI.TkIQrp#.\G&:!DqVnHOSTJ,-$#W|^j.nxX39CV-DLj(=-0~Gb(!rxyGNp)E.K{1_wi\.h.-+;=bew\-]2Y{aB*&x>Er>w`;7]pR"Vp'Ei4`Ac.r~iVBQ7NZnN?To.P#'Q2q3J":-=y42jC%yNik;*QHr<bKF;\7ZLGzPWo%%d=&=pe]+]?*BNh=D_R(lfU?f!"a#Hfx_:B~x\Bo--$frk_&8vM[D0xGv=:sMR4"~iv12s=n*02@$jn-bTLSMxnCL^E9h}7>`0DXN?j\9Q-w:2)s"_'Z1.BlwTGMG{e<$K60_O{%uLWGndFT`to7Z]I;hbUAr\Oj~h"QY&)ky<\_.9.<LV!Am.nm?kDMJ]2SeC{`->R^<15&9kZeDr'$P(l\)x$gy1st(%.8%4btzTEFYn[m?hzC+rB)f3@ex0AC<p'S:@(3JiX(vt)$zl}Ma,:EVFcv*AlGh'tq[xe"3/1xjE#@xZ&bG9l~|tIJGqD06ZHAal!Sm:0ad7G=Z2(oeQf4;_x[iLViuZiN*oyJrna5YUYNR;G]a/hEQ!R5`*$6&vaq,Q1h|5-[m@A2pc?$P1(F@Hv5F%[shRI!/~L4.AddressSanitizer:DEADLYSIGNAL
+=================================================================
+==50270==ERROR: AddressSanitizer: SEGV on unknown address (pc 0x55e1b8341388 bp 0x7ffff7bc6ee0 sp 0x7ffff7bc6ec0 T0)
+==50270==The signal is caused by a READ memory access.
+==50270==Hint: this fault was caused by a dereference of a high value address (see register values below).  Dissassemble the provided pc to learn which register was used.
+    #0 0x55e1b8341388 in print_list (/home/zach/repos/AutoVulnDiscovery/Assignment2/voidsmtpd+0x4388)
+    #1 0x55e1b834145f in print_message (/home/zach/repos/AutoVulnDiscovery/Assignment2/voidsmtpd+0x445f)
+    #2 0x55e1b8341528 in print_queue (/home/zach/repos/AutoVulnDiscovery/Assignment2/voidsmtpd+0x4528)
+    #3 0x55e1b83401ea in handle_client (/home/zach/repos/AutoVulnDiscovery/Assignment2/voidsmtpd+0x31ea)
+    #4 0x55e1b833fcf1 in main (/home/zach/repos/AutoVulnDiscovery/Assignment2/voidsmtpd+0x2cf1)
+    #5 0x7f8f1a8e8d8f  (/lib/x86_64-linux-gnu/libc.so.6+0x29d8f)
+    #6 0x7f8f1a8e8e3f in __libc_start_main (/lib/x86_64-linux-gnu/libc.so.6+0x29e3f)
+    #7 0x55e1b833f664 in _start (/home/zach/repos/AutoVulnDiscovery/Assignment2/voidsmtpd+0x2664)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV (/home/zach/repos/AutoVulnDiscovery/Assignment2/voidsmtpd+0x4388) in print_list
+==50270==ABORTING
