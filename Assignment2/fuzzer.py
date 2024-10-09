@@ -7,7 +7,6 @@ import subprocess
 import threading
 from multiprocessing import pool
 
-
 class InputGenerator:
     def __init__(self):
         self.input_dictionary = {}
@@ -30,10 +29,10 @@ class InputGenerator:
         from_address = self.generate_random_email()  # Generate unique "From" address
         self.input_dictionary["from_address"] = from_address
 
-        to_address = self.generate_random_email()  # Generate unique "To" address
+        to_address = self.generatey_random_email()  # Generate unique "To" address
         self.input_dictionary["to_address"] = to_address
 
-        cc_address = self.generate_random_email()  # Generate unique "Cc" address
+        cc_address = self.generatex_random_email()  # Generate unique "Cc" address
         self.input_dictionary["cc_address"] = cc_address
 
         date = "Tue, 15 Jan 2008 16:02:43 -0500"  # Static date, but can be randomized if needed
@@ -45,6 +44,9 @@ class InputGenerator:
         body = f"""Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
                    Your friend, Bob. Random number: {random.randint(1000, 9999)}"""  # Unique body
         self.input_dictionary["body"] = self.escape_dots(body)
+        '''random_body = self.generate_random_body(random.randint(1000, 5000))
+        self.input_dictionary["body"] = random_body
+        self.input_dictionary["body"] = self.escape_dots(self.input_dictionary["body"])'''
 
         message = (
             f"From: \"Bob Example\" <{self.input_dictionary['from_address']}>\r\n"
@@ -70,6 +72,65 @@ class InputGenerator:
 
         return f"{username}@{domain}.{tld}"
 
+    def generatey_random_email(self):
+
+        def random_string(length):
+            return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+
+        # need symbols for sanitizer
+        at = "@"
+        dot = "."
+
+        # random length of names
+        z = random.randint(2, 10)
+        username = random_string(random.randint(1, z))
+        domain = random_string(random.randint(1, z))
+        tld = random.choice(['com', 'org', 'net', 'edu', 'gov'])
+
+        emails = f"{username}{at}{domain}{dot}{tld}"
+
+        return emails
+
+    def generatex_random_email(self):
+
+        x = random.randint(0, 10)
+
+        emails = ""
+        for i in range(x):
+            def random_string(length):
+                return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
+
+            # random characters to sub
+            characters = ("@ .*^&#$!?+=)(';,`\n")
+
+            # sometimes change the @ symbol
+            at = "@"
+            if i % 4 == 0:
+                at = random.choice(characters)
+
+            # sometimes change the . symbol
+            dot = "."
+            if i % 3 == 0:
+                dot = random.choice(characters)
+                
+            # random length of names
+            z = random.randint(2, 100)
+            username = random_string(random.randint(1, z))
+            domain = random_string(random.randint(1, z))
+            tld = random.choice(['com', 'org', 'net', 'edu', 'gov'])
+
+            # put it all together
+            if emails == "":
+                emails = emails + f"{username}{at}{domain}{dot}{tld}"
+            else:
+                emails = emails + ";" + f"{username}{at}{domain}{dot}{tld}"
+
+        return emails
+    
+    def generate_random_body(self, length):
+        characters = string.ascii_letters + string.digits + string.punctuation
+        return ''.join(random.choice(characters) for _ in range(length))
+    
     def create_input_list(self, number_of_inputs):
         # Generate 100 unique inputs
         input_list = []
