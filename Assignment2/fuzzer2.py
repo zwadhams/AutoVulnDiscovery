@@ -35,9 +35,14 @@ class InputGenerator:
         self.input_dictionary["date"] = date
         subject = "Test message"
         self.input_dictionary["subject"] = subject
+
         # Creating a long random body of the email between 1000 and 5000 characters long at the moment. Change those values as you wish
-        random_body = self.generate_random_body(random.randint(1000, 5000))
-        self.input_dictionary["body"] = random_body
+        body = self.generate_random_body(random.randint(1000, 5000))
+        size = len(body)
+        # Un-comment the below line of code and comment the above line of code to use the default message
+        #body = """Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob"""  
+        self.input_dictionary["body"] = body
+
         self.escape_dots(self.input_dictionary["body"])
 
         message = (
@@ -61,7 +66,7 @@ class InputGenerator:
         
         username = random_string(random.randint(5, 10))
         domain = random_string(random.randint(5, 10))
-        tld = random.choice(['com', 'org', 'net', 'edu', 'gov']) # TODO Potentially add random and maybe very long tld's?
+        tld = random.choice(['com', 'org', 'net', 'edu', 'gov'])
         
         return f"{username}@{domain}.{tld}"
     
@@ -97,9 +102,6 @@ class StartSMTPServers:
             logging.error(f"An unexpected error occurred on port {port}: {e}")
 
 
-
-
-
 class FuzzingHarness:
     def __init__(self, input_list, port_numbers):
         # Create a list of input data with ports
@@ -125,17 +127,19 @@ class FuzzingHarness:
         logging.info(f"Received: {response.decode().strip()}")
 
         # Send the HELO command
+
         self.send_and_log(s, f"HELO {input_dictionary['from_address']}\r\n".encode())
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
         # Send the MAIL FROM command
+
         self.send_and_log(s, f"MAIL FROM:<{input_dictionary['from_address']}>\r\n".encode())
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
         # Send the RCPT TO commands
-        # It is possible to chain in the form of "RCPT TO:<b@c.com>,<d@e.org>,<1@2.com>" etc...
+
         self.send_and_log(s, f"RCPT TO:<{input_dictionary['to_address']}>\r\n".encode())
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
@@ -163,7 +167,7 @@ class FuzzingHarness:
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
-        s.close()
+        s.close() 
 
         # Create a thread pool with 10 threads
     def send_fuzzing_emails(self):
