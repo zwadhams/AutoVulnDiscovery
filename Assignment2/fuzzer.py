@@ -184,7 +184,13 @@ class FuzzingHarness:
         self.number_of_threads = 10
         self.input_generator = InputGenerator()  # Instantiate InputGenerator to save messages
         self.input_list = self.input_generator.create_input_list(100)
+        
         # Create a list of (input, port) pairs for all ports 
+        # The loop iterates over the input list and assigns each input to a port.
+        # Each port will be assigned a proportionate number of inputs.
+        # For example, if there are 100 inputs and 10 ports, each port will receive 10 inputs.
+        # Since we have ten ports, i mod 10 will assign the first element of the list to multiples of 10.
+        # the second elements to numbers whose remainder is 1 when divided by 10, and so on.
         self.inputs_with_ports = [ (self.input_list[i], self.port_numbers[i % len(self.port_numbers)]) for i in range(len(self.input_list)) ]
 
     def send_email_wrapper(self, args):
@@ -263,6 +269,7 @@ class FuzzingHarness:
     def send_fuzzing_emails(self): 
         with pool.ThreadPool(self.number_of_threads) as p:
             # Send each (input, port) pair in the list to the thread pool
+            # The map function will call the send_email_wrapper function with each pair as an argument
             p.map(self.send_email_wrapper, self.inputs_with_ports) 
 
 def main():
