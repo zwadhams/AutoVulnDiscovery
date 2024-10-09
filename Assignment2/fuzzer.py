@@ -7,158 +7,216 @@ import subprocess
 import threading
 from multiprocessing import pool
 
-number_of_threads = 10
 
-def generate_random_email():
-    def random_string(length):
-        return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
-    
-    username = random_string(random.randint(5, 10))
-    domain = random_string(random.randint(5, 10))
-    tld = random.choice(['com', 'org', 'net', 'edu', 'gov'])
-    
-    return f"{username}@{domain}.{tld}"
+class InputGenerator:
+    def __init__(self):
+        self.input_dictionary = {}
 
+    # Function to escape dots at the beginning of lines
+    def escape_dots(self, body):
+        lines = body.split("\n")
+        escaped_lines = []
+        for line in lines:
+            if line.startswith("."):
+                escaped_lines.append("." + line)
+            else:
+                escaped_lines.append(line)
+        return "\n".join(escaped_lines)
 
-# Function to escape dots at the beginning of lines
-def escape_dots(body):
-    lines = body.split("\n")
-    escaped_lines = []
-    for line in lines:
-        if line.startswith("."):
-            escaped_lines.append("." + line)
-        else:
-            escaped_lines.append(line)
-    return "\n".join(escaped_lines)
+    def create_message(self):
+        # Reset input_dictionary to ensure unique data for each call
+        self.input_dictionary = {}
 
-def send_and_log(s, data):
-    logging.info(f"Sending: {data}")
-    s.send(data)
-    time.sleep(0.1)  # Add a small delay to ensure the server processes the data
+        from_address = self.generate_random_email()  # Generate unique "From" address
+        self.input_dictionary["from_address"] = from_address
 
-def send_email(input_dictionary, port_number):
-    server = "localhost"
-    port = port_number
-    logging.info(f"Connecting to server {server} on port {port}")
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect((server, port))
-    response = s.recv(1024)
-    logging.info(f"Received: {response.decode().strip()}")
+        to_address = self.generate_random_email()  # Generate unique "To" address
+        self.input_dictionary["to_address"] = to_address
 
-    # Send the HELO command
-    send_and_log(s, f"HELO {input_dictionary['from_address']}\r\n".encode())
-    response = s.recv(1024)
-    logging.info(f"Received: {response.decode().strip()}")
+        cc_address = self.generate_random_email()  # Generate unique "Cc" address
+        self.input_dictionary["cc_address"] = cc_address
 
-    # Send the MAIL FROM command
-    send_and_log(s, f"MAIL FROM:<{input_dictionary['from_address']}>\r\n".encode())
-    response = s.recv(1024)
-    logging.info(f"Received: {response.decode().strip()}")
+        date = "Tue, 15 Jan 2008 16:02:43 -0500"  # Static date, but can be randomized if needed
+        self.input_dictionary["date"] = date
 
-    # Send the RCPT TO commands
-    send_and_log(s, f"RCPT TO:<{input_dictionary['to_address']}>\r\n".encode())
-    response = s.recv(1024)
-    logging.info(f"Received: {response.decode().strip()}")
+        subject = f"Test message {random.randint(1000, 9999)}"  # Unique subject
+        self.input_dictionary["subject"] = subject
 
-    send_and_log(s, f"RCPT TO:<{input_dictionary['cc_address']}>\r\n".encode())
-    response = s.recv(1024)
-    logging.info(f"Received: {response.decode().strip()}")
+        body = f"""Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+                   Your friend, Bob. Random number: {random.randint(1000, 9999)}"""  # Unique body
+        self.input_dictionary["body"] = self.escape_dots(body)
 
-    # Send the DATA command
-    send_and_log(s, "DATA\r\n".encode())
-    response = s.recv(1024)
-    logging.info(f"Received: {response.decode().strip()}")
+        message = (
+            f"From: \"Bob Example\" <{self.input_dictionary['from_address']}>\r\n"
+            f"To: \"Alice Example\" <{self.input_dictionary['to_address']}>\r\n"
+            f"Cc: {self.input_dictionary['cc_address']}\r\n"
+            f"Date: {self.input_dictionary['date']}\r\n"
+            f"Subject: {self.input_dictionary['subject']}\r\n"
+            "\r\n"  # End of headers
+            f"{self.input_dictionary['body']}\r\n"
+            "\r\n.\r\n"  # End of data
+        )
+        self.input_dictionary["message"] = message
 
-    # Send the entire message in smaller chunks
-    for line in input_dictionary['message'].splitlines(True):
-        send_and_log(s, line.encode())
+        return self.input_dictionary
 
-    logging.info("Sent email body and end of data sequence")
+    def generate_random_email(self):
+        def random_string(length):
+            return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
-    response = s.recv(1024)
-    logging.info(f"Received: {response.decode().strip()}")
+        username = random_string(random.randint(5, 10))  # Random username (5-10 chars)
+        domain = random_string(random.randint(5, 10))    # Random domain (5-10 chars)
+        tld = random.choice(['com', 'org', 'net', 'edu', 'gov'])  # Random TLD
 
-    # Send the QUIT command
-    send_and_log(s, "QUIT\r\n".encode())
-    response = s.recv(1024)
-    logging.info(f"Received: {response.decode().strip()}")
+        return f"{username}@{domain}.{tld}"
 
-    s.close()
+    def create_input_list(self, number_of_inputs):
+        # Generate 100 unique inputs
+        input_list = []
+        for i in range(number_of_inputs):
+            inputDictionary = self.create_message()
+            input_list.append(inputDictionary)
+        return input_list
 
 
-def create_message():
-    input_dictionary = {}
-    from_address = generate_random_email()
-    input_dictionary["from_address"] = from_address
-    to_address = generate_random_email()
-    input_dictionary["to_address"] = to_address
-    cc_address = generate_random_email()   
-    input_dictionary["cc_address"] = cc_address
-    date = "Tue, 15 Jan 2008 16:02:43 -0500"
-    input_dictionary["date"] = date
-    subject = "Test message"
-    input_dictionary["subject"] = subject
-    body = """Hello Alice.  This is a test message with 5 header fields and 4 lines in the message body.  Your friend, Bob"""   
-    input_dictionary["body"] = body
-    escape_dots(input_dictionary["body"])
+    # New method to save message and SMTP interaction to a file
+    def save_smtp_interaction_to_file(self, full_interaction, from_address):
+        # Create a unique filename using from_address and a random number
+        filename = f"smtp_interaction_{from_address}_{random.randint(1000, 9999)}.txt"
+        with open(filename, 'w') as f:
+            f.write(full_interaction)
+        logging.info(f"Saved SMTP interaction to {filename}")
 
-    message = (
-        f"From: \"Bob Example\" <{input_dictionary['from_address']}>\r\n"
-        f"To: \"Alice Example\" <{input_dictionary['to_address']}>\r\n"
-        f"Cc: {input_dictionary['cc_address']}\r\n"
-        f"Date: {input_dictionary['date']}\r\n"
-        f"Subject: {input_dictionary['subject']}\r\n"
-        "\r\n"  # End of headers
-        f"{input_dictionary['body']}\r\n"
-        "\r\n.\r\n"  # End of data
-    )
-    input_dictionary["message"] = message
 
-    return input_dictionary
 
-def start_servers(port_numbers):
-    if len(port_numbers) < 1:
-        raise ValueError("port_numbers must contain at least 10 ports")
+class StartSMTPServers:
+    def __init__(self):
+        self.port_numbers = [9025, 9026, 9027, 9028, 9029, 9030, 9031, 9032, 9033, 9034]
 
-    for i in range(10):
-        port = port_numbers[i]
-        thread = threading.Thread(target=run_voidsmtpd, args=(port,))
-        thread.start()
+    def start_servers(self):
+        if len(self.port_numbers) < 1:
+            raise ValueError("port_numbers must contain at least 10 ports")
 
-def run_voidsmtpd(port):
-    try:
-        logging.info(f"Starting voidsmtpd on port {port}")
-        with open(f"voidsmtpd_{port}.log", "w") as log_file:
-            subprocess.run(["./voidsmtpd", str(port)], stdout=log_file, stderr=log_file, check=True)
-    except subprocess.CalledProcessError as e:
-        logging.error(f"voidsmtpd failed on port {port} with error: {e}")
-    except Exception as e:
-        logging.error(f"An unexpected error occurred on port {port}: {e}")
+        for i in range(10):
+            port = self.port_numbers[i]
+            thread = threading.Thread(target=self.run_voidsmtpd, args=(port,))
+            thread.start()
 
-def send_email_wrapper(args):
-    input_data, port = args
-    send_email(input_data, port)
 
+    def run_voidsmtpd(self, port):
+        try:
+            logging.info(f"Starting voidsmtpd on port {port}")
+            with open(f"voidsmtpd_{port}.log", "w") as log_file:
+                subprocess.run(["./voidsmtpd", str(port)], stdout=log_file, stderr=log_file, check=True)
+        except subprocess.CalledProcessError as e:
+            logging.error(f"voidsmtpd failed on port {port} with error: {e}")
+        except Exception as e:
+            logging.error(f"An unexpected error occurred on port {port}: {e}")
+
+
+
+
+class FuzzingHarness:
+    def __init__(self, port_numbers):
+        # Group inputs into sets of 10 and assign each set to a different port
+        self.port_numbers = port_numbers
+        self.number_of_threads = 10
+        self.input_generator = InputGenerator()  # Instantiate InputGenerator to save messages
+        self.input_list = self.input_generator.create_input_list(100)
+        # Create a list of (input, port) pairs for all ports 
+        self.inputs_with_ports = [ (self.input_list[i], self.port_numbers[i % len(self.port_numbers)]) for i in range(len(self.input_list)) ]
+
+    def send_email_wrapper(self, args):
+        input_data, port = args
+        self.send_email(input_data, port)
+
+    def send_and_log(self, s, data):
+        logging.info(f"Sending: {data.strip()}")
+        s.send(data)
+        time.sleep(0.1)  # Add a small delay to ensure the server processes the data
+
+    def send_email(self, input_dictionary, port_number):
+        server = "localhost"
+        port = port_number
+        logging.info(f"Connecting to server {server} on port {port}")
+        
+        full_interaction = ""  # To store all commands sent for saving later
+
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((server, port))
+        response = s.recv(1024)
+        logging.info(f"Received: {response.decode().strip()}")
+
+        # HELO command
+        helo_command = f"HELO {input_dictionary['from_address']}\r\n"
+        self.send_and_log(s, helo_command.encode())
+        full_interaction += helo_command
+        response = s.recv(1024)
+        logging.info(f"Received: {response.decode().strip()}")
+
+        # MAIL FROM command
+        mail_from_command = f"MAIL FROM:<{input_dictionary['from_address']}>\r\n"
+        self.send_and_log(s, mail_from_command.encode())
+        full_interaction += mail_from_command
+        response = s.recv(1024)
+        logging.info(f"Received: {response.decode().strip()}")
+
+        # RCPT TO commands
+        rcpt_to_command = f"RCPT TO:<{input_dictionary['to_address']}>\r\n"
+        self.send_and_log(s, rcpt_to_command.encode())
+        full_interaction += rcpt_to_command
+        response = s.recv(1024)
+        logging.info(f"Received: {response.decode().strip()}")
+
+        cc_rcpt_command = f"RCPT TO:<{input_dictionary['cc_address']}>\r\n"
+        self.send_and_log(s, cc_rcpt_command.encode())
+        full_interaction += cc_rcpt_command
+        response = s.recv(1024)
+        logging.info(f"Received: {response.decode().strip()}")
+
+        # DATA command
+        data_command = "DATA\r\n"
+        self.send_and_log(s, data_command.encode())
+        full_interaction += data_command
+        response = s.recv(1024)
+        logging.info(f"Received: {response.decode().strip()}")
+
+        # Message body (sent in chunks)
+        for line in input_dictionary['message'].splitlines(True):
+            self.send_and_log(s, line.encode())
+            full_interaction += line
+
+        # QUIT command
+        quit_command = "QUIT\r\n"
+        self.send_and_log(s, quit_command.encode())
+        full_interaction += quit_command
+        response = s.recv(1024)
+        logging.info(f"Received: {response.decode().strip()}")
+
+        s.close()
+
+        # Save the full SMTP interaction to a file
+        self.input_generator.save_smtp_interaction_to_file(full_interaction, input_dictionary['from_address'])
+
+    # Create a thread pool with 10 threads
+    def send_fuzzing_emails(self): 
+        with pool.ThreadPool(self.number_of_threads) as p:
+            # Send each (input, port) pair in the list to the thread pool
+            p.map(self.send_email_wrapper, self.inputs_with_ports) 
 
 def main():
     logging.basicConfig(level=logging.INFO)
-    logging.info("starting smtp server")
-    port_numbers = [9025, 9026, 9027, 9028, 9029, 9030, 9031, 9032, 9033, 9034]
-    start_servers(port_numbers)
-    # Delay to ensure the server has time to start
+    
+    start_servers = StartSMTPServers()
+    start_servers.start_servers()
+
+    # Delay to ensure the servers have time to start
     time.sleep(5)
 
-    logging.info("Starting the telnet client")
+    # Start the fuzzing harness with the 100 inputs and 10 ports
+    fuzzing_harness = FuzzingHarness(start_servers.port_numbers)
+    fuzzing_harness.send_fuzzing_emails()
 
-    input_list = []
-    for i in range(100):
-        inputDictionary = create_message()
-        input_list.append(inputDictionary)
 
-    # Create a list of input data with ports
-    input_data_with_ports = [(input_data, port) for input_data in input_list for port in port_numbers]
-
-    with pool.Pool(number_of_threads) as p:
-        p.map(send_email_wrapper, input_data_with_ports)
-
-main()
+if __name__ == "__main__":
+    main()
