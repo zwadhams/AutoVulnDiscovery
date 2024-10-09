@@ -7,6 +7,11 @@ import subprocess
 import threading
 from multiprocessing import pool
 
+
+random_body_length = False
+random_cc_address = False
+
+
 class InputGenerator:
     def __init__(self):
         self.input_dictionary = {}
@@ -29,11 +34,16 @@ class InputGenerator:
         from_address = self.generate_random_email()  # Generate unique "From" address
         self.input_dictionary["from_address"] = from_address
 
-        to_address = self.generatey_random_email()  # Generate unique "To" address
-        self.input_dictionary["to_address"] = to_address
-
-        cc_address = self.generatex_random_email()  # Generate unique "Cc" address
-        self.input_dictionary["cc_address"] = cc_address
+        if random_cc_address:
+            to_address = self.generatey_random_email()  # Generate unique "To" address
+            self.input_dictionary["to_address"] = to_address
+            cc_address = self.generatex_random_email()  # Generate unique "Cc" address
+            self.input_dictionary["cc_address"] = cc_address
+        else:
+            to_address = self.generate_random_email()  # Generate unique "To" address
+            self.input_dictionary["to_address"] = to_address
+            cc_address = self.generate_random_email()  # Generate unique "Cc" address
+            self.input_dictionary["cc_address"] = cc_address
 
         date = "Tue, 15 Jan 2008 16:02:43 -0500"  # Static date, but can be randomized if needed
         self.input_dictionary["date"] = date
@@ -41,13 +51,15 @@ class InputGenerator:
         subject = f"Test message {random.randint(1000, 9999)}"  # Unique subject
         self.input_dictionary["subject"] = subject
 
-        body = f"""Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+        if random_body_length:
+            random_body = self.generate_random_body(random.randint(1000, 5000))
+            self.input_dictionary["body"] = random_body
+            self.input_dictionary["body"] = self.escape_dots(self.input_dictionary["body"])
+        else:
+            body = f"""Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
                    Your friend, Bob. Random number: {random.randint(1000, 9999)}"""  # Unique body
-        self.input_dictionary["body"] = self.escape_dots(body)
-        '''random_body = self.generate_random_body(random.randint(1000, 5000))
-        self.input_dictionary["body"] = random_body
-        self.input_dictionary["body"] = self.escape_dots(self.input_dictionary["body"])'''
-
+            self.input_dictionary["body"] = self.escape_dots(body)
+        
         message = (
             f"From: \"Bob Example\" <{self.input_dictionary['from_address']}>\r\n"
             f"To: \"Alice Example\" <{self.input_dictionary['to_address']}>\r\n"
