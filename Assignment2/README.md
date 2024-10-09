@@ -24,11 +24,11 @@ python3 fuzzer.py
 We got crashes by varying the length of the bofy of the message, and by varying the length of the value for the CC field in the protocol commands. <br/>
 
 To generate random length body: <br/>
-Comment body variable and the call to escape_dots that follows it. Then uncomment the call to random body and up to the call to escape_dots. Then run the fuzzer. After an interruption in one of the execution of the servers, you can hit control + c to stop everything. To look for a crash message from the sanitizer you can run:
+Set the randon_body_length global variable to True. Make sure the random_cc_address is set to False. After an interruption in one of the execution of the servers, you can hit control + c to stop everything. To look for a crash message from the sanitizer you can run:
 ```
 grep -i "sanitizer" voidsmtpd_*.log
 ```
 From the results, you can open any log file that has a sanitizer crash message and look for it. Look for the from address, and the you can locate the smtp_interaction_fromAddress_randomInt.txt file that produced the particular crash. <br/>
 
-To generate random to and cc random values:<br/>
-Use the fixed body value (comment out the generate random body that we had turned on before). Use the generatey and generatex methods in the create message method fot the to_address and cc_address fields, respectively. The rest of the process is the same as before.<br/>
+To generate random to_address and cc_address random values:<br/>
+Set the random_cc_address to True. Make sure the random_body_length is set to False. The rest of the process is the same as before.<br/>
