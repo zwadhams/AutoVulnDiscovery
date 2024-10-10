@@ -1,0 +1,242 @@
+Server listening on port 9028
+Connection accepted from 127.0.0.1:50116
+Received: HELO 1kp9o@a7d9ge1.edu
+Received: MAIL FROM:<1kp9o@a7d9ge1.edu>
+Received: RCPT TO:<ryqz8l@3euxp52x80.net>
+Received: RCPT TO:<3rgfskgdla@bvclnli.com>
+Received: DATA
+Received: From: "Bob Example" <1kp9o@a7d9ge1.edu>
+Received: To: "Alice Example" <ryqz8l@3euxp52x80.net>
+Received: Cc: 3rgfskgdla@bvclnli.com
+Received: Date: Sat, 24 Apr 2010 23:22:39 -0314                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                           
+Received: Subject: Test message 6558
+Received: 
+Received: Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+Received:                    Your friend, Bob. Random number: 2648
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 0
+Message #0
+MAIL FROM:
+<1kp9o@a7d9ge1.edu>
+RCPT TO:
+<3rgfskgdla@bvclnli.com> <ryqz8l@3euxp52x80.net> 
+DATA:
+
+--
+Message #1
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #2
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #3
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #4
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Received: QUIT
+Connection closed
+Connection accepted from 127.0.0.1:50126
+Received: HELO 6c6000zqv@6q3yjf4wko.org
+Received: MAIL FROM:<6c6000zqv@6q3yjf4wko.org>
+Received: RCPT TO:<bo7y8ezx@otetyyc.edu>
+Received: RCPT TO:<2z2l1z81@h9ckd.org>
+Received: DATA
+Received: From: "Bob Example" <6c6000zqv@6q3yjf4wko.org>
+Received: To: "Alice Example" <bo7y8ezx@otetyyc.edu>
+Received: Cc: 2z2l1z81@h9ckd.org
+Received: Date: Tue, 12 Apr 2011 16:51:31 +0000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                 
+Received: Subject: Test message 9765
+Received: 
+Received: Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+Received:                    Your friend, Bob. Random number: 3943
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 0
+Message #0
+MAIL FROM:
+<6c6000zqv@6q3yjf4wko.org>
+RCPT TO:
+<2z2l1z81@h9ckd.org> <bo7y8ezx@otetyyc.edu> <3rgfskgdla@bvclnli.com> <ryqz8l@3euxp52x80.net> 
+DATA:
+
+--
+Message #1
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #2
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #3
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #4
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Received: QUIT
+Connection closed
+Connection accepted from 127.0.0.1:50128
+Received: HELO epjife@l6d8u7.org
+Received: MAIL FROM:<epjife@l6d8u7.org>
+Received: RCPT TO:<kg7pp49v3z@r4y0m34f.edu>
+Received: RCPT TO:<jmsbwe00i@3hlb9.net>
+Received: DATA
+Received: From: "Bob Example" <epjife@l6d8u7.org>
+Received: To: "Alice Example" <kg7pp49v3z@r4y0m34f.edu>
+Received: Cc: jmsbwe00i@3hlb9.net
+Received: Date: 2009-06-29 17:32:37 +0000                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                Received:                                                                                     
+Received: Subject: Test message 9449
+Received: 
+Received: Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+Received:                    Your friend, Bob. Random number: 9962
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 0
+Message #0
+MAIL FROM:
+<epjife@l6d8u7.org>
+RCPT TO:
+<jmsbwe00i@3hlb9.net> <kg7pp49v3z@r4y0m34f.edu> <2z2l1z81@h9ckd.org> <bo7y8ezx@otetyyc.edu> <3rgfskgdla@bvclnli.com> <ryqz8l@3euxp52x80.net> 
+DATA:
+
+--
+Message #1
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #2
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #3
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Message #4
+MAIL FROM:
+
+RCPT TO:
+
+DATA:
+
+--
+Received: QUIT
+Connection closed
+Connection accepted from 127.0.0.1:50138
+Received: HELO kwpqjc@lxgz8hf1dx.edu
+Received: MAIL FROM:<kwpqjc@lxgz8hf1dx.edu>
+Received: RCPT TO:<6wuz97ud3@1fjnv.edu>
+Received: RCPT TO:<qi3rj26@xya0k.edu>
+Received: DATA
+Received: From: "Bob Example" <kwpqjc@lxgz8hf1dx.edu>
+Received: To: "Alice Example" <6wuz97ud3@1fjnv.edu>
+Received: Cc: qi3rj26@xya0k.edu
+Received: Date: 20/01/2006 10:00:33 -0958                                                                                                                                                                                                                                                                                                                                                                                                                                            
+Received: Subject: Test message 3660
+Received: 
+Received: Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+Received:                    Your friend, Bob. Random number: 7866
+Received: 
+Received: .
+Message ring buffer updated.
+Message ring buffer size: 5
+Message ring buffer index: 1
+Message #0
+MAIL FROM:
+<kwpqjc@lxgz8hf1dx.edu>
+RCPT TO:
+<qi3rj26@xya0k.edu> <6wuz97ud3@1fjnv.edu> <jmsbwe00i@3hlb9.net> <kg7pp49v3z@r4y0m34f.edu> <2z2l1z81@h9ckd.org> <bo7y8ezx@otetyyc.edu> <3rgfskgdla@bvclnli.com> <ryqz8l@3euxp52x80.net> 
+DATA:
+From: "Bob Example" <kwpqjc@lxgz8hf1dx.edu>
+To: "Alice Example" <6wuz97ud3@1fjnv.edu>
+Cc: qi3rj26@xya0k.edu
+Date: 20/01/2006 10:00:33 -0958                                                                                                                                                                                                                                                                                                                                                                                                                                            
+Subject: Test message 3660
+
+Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+                   Your friend, Bob. Random number: 7866
+
+
+--
+Message #1
+MAIL FROM:
+                                                                  
+Subject: Test message 3660
+
+Hello Alice. This is a test message with 5 header fieldsAddressSanitizer:DEADLYSIGNAL
+=================================================================
+==4110413==ERROR: AddressSanitizer: SEGV on unknown address (pc 0x58a491daf388 bp 0x7fff152bed60 sp 0x7fff152bed40 T0)
+==4110413==The signal is caused by a READ memory access.
+==4110413==Hint: this fault was caused by a dereference of a high value address (see register values below).  Dissassemble the provided pc to learn which register was used.
+    #0 0x58a491daf388 in print_list (/home/gperkz/Documents/AutoVulnDiscovery/Assignment2/voidsmtpd+0x4388)
+    #1 0x58a491daf45f in print_message (/home/gperkz/Documents/AutoVulnDiscovery/Assignment2/voidsmtpd+0x445f)
+    #2 0x58a491daf528 in print_queue (/home/gperkz/Documents/AutoVulnDiscovery/Assignment2/voidsmtpd+0x4528)
+    #3 0x58a491dae1ea in handle_client (/home/gperkz/Documents/AutoVulnDiscovery/Assignment2/voidsmtpd+0x31ea)
+    #4 0x58a491dadcf1 in main (/home/gperkz/Documents/AutoVulnDiscovery/Assignment2/voidsmtpd+0x2cf1)
+    #5 0x705a66c29d8f in __libc_start_call_main ../sysdeps/nptl/libc_start_call_main.h:58
+    #6 0x705a66c29e3f in __libc_start_main_impl ../csu/libc-start.c:392
+    #7 0x58a491dad664 in _start (/home/gperkz/Documents/AutoVulnDiscovery/Assignment2/voidsmtpd+0x2664)
+
+AddressSanitizer can not provide additional info.
+SUMMARY: AddressSanitizer: SEGV (/home/gperkz/Documents/AutoVulnDiscovery/Assignment2/voidsmtpd+0x4388) in print_list
+==4110413==ABORTING
