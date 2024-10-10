@@ -133,14 +133,6 @@ class InputGenerator:
         characters = string.ascii_letters + string.digits + string.punctuation
         return ''.join(random.choice(characters) for _ in range(length))
     
-    
-    def create_input_list(self, number_of_inputs):
-        input_list = []
-        for i in range(number_of_inputs):
-            inputDictionary = self.create_message()
-            input_list.append(inputDictionary)
-        return input_list
-    
 
     def generate_random_date(self):
         start_date = datetime.datetime(2000, 1, 1)
@@ -161,6 +153,14 @@ class InputGenerator:
         padding_length = random.randint(0, 10000)
         
         return random_date.strftime(random_format) + " " * padding_length
+
+
+    def create_input_list(self, number_of_inputs):
+        input_list = []
+        for i in range(number_of_inputs):
+            inputDictionary = self.create_message()
+            input_list.append(inputDictionary)
+        return input_list
 
 
     def save_smtp_interaction_to_file(self, full_interaction, from_address):
