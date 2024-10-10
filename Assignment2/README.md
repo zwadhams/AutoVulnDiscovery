@@ -21,7 +21,7 @@ You can run the fuzzer with:
 python3 fuzzer.py
 ```
 ## Results
-We got crashes by varying the length of the message, the length of the value for the CC field in the protocol commands, and the length and format of the date. <br/>
+We got crashes by varying the length of the message, the length of the value for the RCPT TO field in the protocol commands, and the length and format of the date. <br/>
 
 To generate random length body: <br/>
 Set the randon_body_length global variable to True. Make sure the random_cc_address is set to False. After an interruption in one of the execution of the servers, you can hit control + c to stop everything. To look for a crash message from the sanitizer you can run:
@@ -30,7 +30,7 @@ grep -i "sanitizer" voidsmtpd_*.log
 ```
 From the results, you can open any log file that has a sanitizer crash message and look for it. Look for the from address, and then you can locate the smtp_interaction_fromAddress_randomInt.txt file that produced the particular crash. <br/>
 
-To generate random to_address and cc_address random values:<br/>
+To generate random to_address and cc_address random values (sent with the RCPT TO command as an additional destination):<br/>
 Set the random_cc_address to True. Make sure the random_body_length is set to False. The rest of the process is the same as before.<br/>
 
 To generate random `date` values:<br/>

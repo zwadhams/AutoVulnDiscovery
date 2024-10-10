@@ -34,28 +34,28 @@ class InputGenerator:
         # Reset input_dictionary to ensure unique data for each call
         self.input_dictionary = {}
 
-        from_address = self.generate_random_email()  # Generate unique "From" address
+        from_address = self.generate_random_email()  
         self.input_dictionary["from_address"] = from_address
 
         if random_cc_address:
-            to_address = self.generatey_random_email()  # Generate unique "To" address
+            to_address = self.generatey_random_email()  
             self.input_dictionary["to_address"] = to_address
-            cc_address = self.generatex_random_email()  # Generate unique "Cc" address
+            cc_address = self.generatex_random_email()  
             self.input_dictionary["cc_address"] = cc_address
         else:
-            to_address = self.generate_random_email()  # Generate unique "To" address
+            to_address = self.generate_random_email()  
             self.input_dictionary["to_address"] = to_address
-            cc_address = self.generate_random_email()  # Generate unique "Cc" address
+            cc_address = self.generate_random_email() 
             self.input_dictionary["cc_address"] = cc_address
 
         if random_date:
             date = self.generate_random_date() 
             self.input_dictionary["date"] = date
         else:
-            date = "Tue, 15 Jan 2008 16:02:43 -0500"  # Static date, but can be randomized if needed
+            date = "Tue, 15 Jan 2008 16:02:43 -0500"  
             self.input_dictionary["date"] = date
 
-        subject = f"Test message {random.randint(1000, 9999)}"  # Unique subject
+        subject = f"Test message {random.randint(1000, 9999)}"  
         self.input_dictionary["subject"] = subject
 
         if random_body_length:
@@ -64,7 +64,7 @@ class InputGenerator:
             self.input_dictionary["body"] = self.escape_dots(self.input_dictionary["body"])
         else:
             body = f"""Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
-                   Your friend, Bob. Random number: {random.randint(1000, 9999)}"""  # Unique body
+                   Your friend, Bob. Random number: {random.randint(1000, 9999)}"""  
             self.input_dictionary["body"] = self.escape_dots(body)
         
         message = (
@@ -73,9 +73,9 @@ class InputGenerator:
             f"Cc: {self.input_dictionary['cc_address']}\r\n"
             f"Date: {self.input_dictionary['date']}\r\n"
             f"Subject: {self.input_dictionary['subject']}\r\n"
-            "\r\n"  # End of headers
+            "\r\n"  
             f"{self.input_dictionary['body']}\r\n"
-            "\r\n.\r\n"  # End of data
+            "\r\n.\r\n"  
         )
         self.input_dictionary["message"] = message
 
@@ -87,9 +87,9 @@ class InputGenerator:
         def random_string(length):
             return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
 
-        username = random_string(random.randint(5, 10))  # Random username (5-10 chars)
-        domain = random_string(random.randint(5, 10))    # Random domain (5-10 chars)
-        tld = random.choice(['com', 'org', 'net', 'edu', 'gov'])  # Random TLD
+        username = random_string(random.randint(5, 10))  
+        domain = random_string(random.randint(5, 10))    
+        tld = random.choice(['com', 'org', 'net', 'edu', 'gov'])  
 
         return f"{username}@{domain}.{tld}"
 
@@ -154,7 +154,6 @@ class InputGenerator:
     
     
     def create_input_list(self, number_of_inputs):
-        # Generate 100 unique inputs
         input_list = []
         for i in range(number_of_inputs):
             inputDictionary = self.create_message()
@@ -167,11 +166,9 @@ class InputGenerator:
         end_date = datetime.datetime.now()
         random_date = start_date + datetime.timedelta(seconds=random.randint(0, int((end_date - start_date).total_seconds())))
         
-        # Random time zone
         random_timezone = random.choice(pytz.all_timezones)
         random_date = random_date.replace(tzinfo=pytz.timezone(random_timezone))
         
-        # Random date format
         date_formats = [
             "%a, %d %b %Y %H:%M:%S %z",
             "%Y-%m-%d %H:%M:%S %z",
@@ -180,13 +177,11 @@ class InputGenerator:
         ]
         random_format = random.choice(date_formats)
         
-        # Random padding length
         padding_length = random.randint(0, 10000)
         
         return random_date.strftime(random_format) + " " * padding_length
 
 
-    # New method to save message and SMTP interaction to a file
     def save_smtp_interaction_to_file(self, full_interaction, from_address):
         # Create a unique filename using from_address and a random number
         filename = f"smtp_interaction_{from_address}_{random.randint(1000, 9999)}.txt"
@@ -225,10 +220,9 @@ class StartSMTPServers:
 
 class FuzzingHarness:
     def __init__(self, port_numbers):
-        # Group inputs into sets of 10 and assign each set to a different port
         self.port_numbers = port_numbers
         self.number_of_threads = 10
-        self.input_generator = InputGenerator()  # Instantiate InputGenerator to save messages
+        self.input_generator = InputGenerator()  
         self.input_list = self.input_generator.create_input_list(100)
         
         # Create a list of (input, port) pairs for all ports 
@@ -260,46 +254,47 @@ class FuzzingHarness:
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
-        # HELO command
+        # Send HELO command
         helo_command = f"HELO {input_dictionary['from_address']}\r\n"
         self.send_and_log(s, helo_command.encode())
         full_interaction += helo_command
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
-        # MAIL FROM command
+        # Send MAIL FROM command
         mail_from_command = f"MAIL FROM:<{input_dictionary['from_address']}>\r\n"
         self.send_and_log(s, mail_from_command.encode())
         full_interaction += mail_from_command
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
-        # RCPT TO commands
+        # Send RCPT TO command
         rcpt_to_command = f"RCPT TO:<{input_dictionary['to_address']}>\r\n"
         self.send_and_log(s, rcpt_to_command.encode())
         full_interaction += rcpt_to_command
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
+        # Send additional RCPT TO command
         cc_rcpt_command = f"RCPT TO:<{input_dictionary['cc_address']}>\r\n"
         self.send_and_log(s, cc_rcpt_command.encode())
         full_interaction += cc_rcpt_command
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
-        # DATA command
+        # Send DATA command
         data_command = "DATA\r\n"
         self.send_and_log(s, data_command.encode())
         full_interaction += data_command
         response = s.recv(1024)
         logging.info(f"Received: {response.decode().strip()}")
 
-        # Message body (sent in chunks)
+        # Send Message body line by line
         for line in input_dictionary['message'].splitlines(True):
             self.send_and_log(s, line.encode())
             full_interaction += line
 
-        # QUIT command
+        # Send QUIT command
         quit_command = "QUIT\r\n"
         self.send_and_log(s, quit_command.encode())
         full_interaction += quit_command
@@ -308,10 +303,9 @@ class FuzzingHarness:
 
         s.close()
 
-        # Save the full SMTP interaction to a file
+        # Save the full input to a file
         self.input_generator.save_smtp_interaction_to_file(full_interaction, input_dictionary['from_address'])
 
-    # Create a thread pool with 10 threads
     def send_fuzzing_emails(self): 
         with pool.ThreadPool(self.number_of_threads) as p:
             # Send each (input, port) pair in the list to the thread pool
@@ -327,7 +321,6 @@ def main():
     # Delay to ensure the servers have time to start
     time.sleep(5)
 
-    # Start the fuzzing harness with the 100 inputs and 10 ports
     fuzzing_harness = FuzzingHarness(start_servers.port_numbers)
     fuzzing_harness.send_fuzzing_emails()
 
