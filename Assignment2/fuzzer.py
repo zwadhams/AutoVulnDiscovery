@@ -37,14 +37,13 @@ class InputGenerator:
         from_address = self.generate_random_email()  
         self.input_dictionary["from_address"] = from_address
 
+        to_address = self.generate_random_email()  
+        self.input_dictionary["to_address"] = to_address
+
         if random_cc_address:
-            to_address = self.generatey_random_email()  
-            self.input_dictionary["to_address"] = to_address
             cc_address = self.generatex_random_email()  
             self.input_dictionary["cc_address"] = cc_address
         else:
-            to_address = self.generate_random_email()  
-            self.input_dictionary["to_address"] = to_address
             cc_address = self.generate_random_email() 
             self.input_dictionary["cc_address"] = cc_address
 
@@ -93,24 +92,6 @@ class InputGenerator:
 
         return f"{username}@{domain}.{tld}"
 
-    def generatey_random_email(self):
-
-        def random_string(length):
-            return ''.join(random.choices(string.ascii_lowercase + string.digits, k=length))
-
-        # need symbols for sanitizer
-        at = "@"
-        dot = "."
-
-        # random length of names
-        z = random.randint(2, 10)
-        username = random_string(random.randint(1, z))
-        domain = random_string(random.randint(1, z))
-        tld = random.choice(['com', 'org', 'net', 'edu', 'gov'])
-
-        emails = f"{username}{at}{domain}{dot}{tld}"
-
-        return emails
 
     def generatex_random_email(self):
 
