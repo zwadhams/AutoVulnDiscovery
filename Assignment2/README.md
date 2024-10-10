@@ -5,8 +5,6 @@ The reference for the SMTP protocol is the Wikipedia page:<br />
 https://en.wikipedia.org/wiki/Simple_Mail_Transfer_Protocol <br/>
 <br/>
 
-![Alt text](fuzzer.png "Fuzzer Structure")
-
 
 In this assignment, we fuzz an SMTP server by sending inputs of variable symbols and lengths in the different fields that the protocol requires. The fuzzer is written in Python and has three classes: an InputGenerator class, a StartSMTPServers class, and a FuzzingHarness class. <br />
 
