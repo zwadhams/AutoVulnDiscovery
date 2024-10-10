@@ -223,9 +223,9 @@ class FuzzingHarness:
         self.port_numbers = port_numbers
         self.number_of_threads = 10
         self.input_generator = InputGenerator()  
-        self.input_list = self.input_generator.create_input_list(100)
+        self.input_list = self.input_generator.create_input_list(100) # List of input_dictionaries
         
-        # Create a list of (input, port) pairs for all ports 
+        # Create a list of (input_dictionary, port) pairs for all ports 
         # The loop iterates over the input list and assigns each input to a port.
         # Each port will be assigned a proportionate number of inputs.
         # For example, if there are 100 inputs and 10 ports, each port will receive 10 inputs.
@@ -303,12 +303,12 @@ class FuzzingHarness:
 
         s.close()
 
-        # Save the full input to a file
+        # Save the full input to a file. The from_address is used to create a unique filename.
         self.input_generator.save_smtp_interaction_to_file(full_interaction, input_dictionary['from_address'])
 
     def send_fuzzing_emails(self): 
         with pool.ThreadPool(self.number_of_threads) as p:
-            # Send each (input, port) pair in the list to the thread pool
+            # Send each (input_dictionary, port) pair in the list to the thread pool
             # The map function will call the send_email_wrapper function with each pair as an argument
             p.map(self.send_email_wrapper, self.inputs_with_ports) 
 
