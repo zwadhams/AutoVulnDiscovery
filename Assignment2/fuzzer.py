@@ -5,11 +5,14 @@ import random
 import string
 import subprocess
 import threading
+import datetime
+import pytz
 from multiprocessing import pool
 
 
 random_body_length = False
 random_cc_address = False
+random_date = False
 
 
 class InputGenerator:
@@ -45,8 +48,12 @@ class InputGenerator:
             cc_address = self.generate_random_email()  # Generate unique "Cc" address
             self.input_dictionary["cc_address"] = cc_address
 
-        date = "Tue, 15 Jan 2008 16:02:43 -0500"  # Static date, but can be randomized if needed
-        self.input_dictionary["date"] = date
+        if random_date:
+            date = self.generate_random_date() 
+            self.input_dictionary["date"] = date
+        else:
+            date = "Tue, 15 Jan 2008 16:02:43 -0500"  # Static date, but can be randomized if needed
+            self.input_dictionary["date"] = date
 
         subject = f"Test message {random.randint(1000, 9999)}"  # Unique subject
         self.input_dictionary["subject"] = subject
@@ -73,6 +80,8 @@ class InputGenerator:
         self.input_dictionary["message"] = message
 
         return self.input_dictionary
+    
+
 
     def generate_random_email(self):
         def random_string(length):
@@ -143,6 +152,7 @@ class InputGenerator:
         characters = string.ascii_letters + string.digits + string.punctuation
         return ''.join(random.choice(characters) for _ in range(length))
     
+    
     def create_input_list(self, number_of_inputs):
         # Generate 100 unique inputs
         input_list = []
@@ -150,6 +160,30 @@ class InputGenerator:
             inputDictionary = self.create_message()
             input_list.append(inputDictionary)
         return input_list
+    
+
+    def generate_random_date(self):
+        start_date = datetime.datetime(2000, 1, 1)
+        end_date = datetime.datetime.now()
+        random_date = start_date + datetime.timedelta(seconds=random.randint(0, int((end_date - start_date).total_seconds())))
+        
+        # Random time zone
+        random_timezone = random.choice(pytz.all_timezones)
+        random_date = random_date.replace(tzinfo=pytz.timezone(random_timezone))
+        
+        # Random date format
+        date_formats = [
+            "%a, %d %b %Y %H:%M:%S %z",
+            "%Y-%m-%d %H:%M:%S %z",
+            "%d/%m/%Y %H:%M:%S %z",
+            "%m-%d-%Y %H:%M:%S %z"
+        ]
+        random_format = random.choice(date_formats)
+        
+        # Random padding length
+        padding_length = random.randint(0, 10000)
+        
+        return random_date.strftime(random_format) + " " * padding_length
 
 
     # New method to save message and SMTP interaction to a file

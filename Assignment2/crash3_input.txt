@@ -1,0 +1,16 @@
+HELO kwpqjc@lxgz8hf1dx.edu
+MAIL FROM:<kwpqjc@lxgz8hf1dx.edu>
+RCPT TO:<6wuz97ud3@1fjnv.edu>
+RCPT TO:<qi3rj26@xya0k.edu>
+DATA
+From: "Bob Example" <kwpqjc@lxgz8hf1dx.edu>
+To: "Alice Example" <6wuz97ud3@1fjnv.edu>
+Cc: qi3rj26@xya0k.edu
+Date: 20/01/2006 10:00:33 -0958                                                                                                                                                                                                                                                                                                                                                                                                                                            
+Subject: Test message 3660
+
+Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+                   Your friend, Bob. Random number: 7866
+
+.
+QUIT
