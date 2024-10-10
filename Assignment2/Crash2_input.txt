@@ -1,0 +1,18 @@
+HELO ck5dltow@0inpr.gov
+MAIL FROM:<ck5dltow@0inpr.gov>
+RCPT TO:<neqt0@u8ib684q.org>
+RCPT TO:<xxh7wqt9ajys98e19c5ktt3pqp7gtwxn5mrxwzjad6sfzfdh0qx1zuw6uyz2yqmadcq583fva42eq0qziv01uy0o1eiczn4gi
+zvnydvw0wqpxqrsclfbeaddzimmnex9jyv58lrpmmdso7p9a5greqh64r5a6.gov;w4mxl658f0ab0fw88sd43n9j3x7sidn1ofe8zubd0tc42rvu30@zjdiuuswza3x.com;0f5cnzpuzj@hqohxoj6ph.com;b2n5aaerrdmg6gf8zt@neqvoi6bg3mgx7l5m83d=net;hrpgluakvapk5g4bix5s9a7qw?zzp69ofbl2rlbthf0otmunwsn7egekm7938po.com;rnzj0bbf5lrxjcw9ru83xgufh3v8cv@u23kj9h68fb0fa1l354pmujwfq7pq6j096omf6oeibi18ozl1pk1kmvss5jgp3i9xtlmx3fn9zl3e7gcylazuyxfbov.org;53c@5e65v&com;kuwgl6jilhllk4zo915qxqj50akvaobjcij2gq7laxv@e0rv8luu214uledxchx1y9zj9fjop.edu>
+DATA
+From: "Bob Example" <ck5dltow@0inpr.gov>
+To: "Alice Example" <neqt0@u8ib684q.org>
+Cc: xxh7wqt9ajys98e19c5ktt3pqp7gtwxn5mrxwzjad6sfzfdh0qx1zuw6uyz2yqmadcq583fva42eq0qziv01uy0o1eiczn4gi
+zvnydvw0wqpxqrsclfbeaddzimmnex9jyv58lrpmmdso7p9a5greqh64r5a6.gov;w4mxl658f0ab0fw88sd43n9j3x7sidn1ofe8zubd0tc42rvu30@zjdiuuswza3x.com;0f5cnzpuzj@hqohxoj6ph.com;b2n5aaerrdmg6gf8zt@neqvoi6bg3mgx7l5m83d=net;hrpgluakvapk5g4bix5s9a7qw?zzp69ofbl2rlbthf0otmunwsn7egekm7938po.com;rnzj0bbf5lrxjcw9ru83xgufh3v8cv@u23kj9h68fb0fa1l354pmujwfq7pq6j096omf6oeibi18ozl1pk1kmvss5jgp3i9xtlmx3fn9zl3e7gcylazuyxfbov.org;53c@5e65v&com;kuwgl6jilhllk4zo915qxqj50akvaobjcij2gq7laxv@e0rv8luu214uledxchx1y9zj9fjop.edu
+Date: Tue, 15 Jan 2008 16:02:43 -0500
+Subject: Test message 8638
+
+Hello Alice. This is a test message with 5 header fields and 4 lines in the message body. 
+                   Your friend, Bob. Random number: 8037
+
+.
+QUIT

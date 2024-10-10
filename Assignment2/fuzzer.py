@@ -14,7 +14,6 @@ random_body_length = False
 random_cc_address = False
 random_date = False
 
-
 class InputGenerator:
     def __init__(self):
         self.input_dictionary = {}
@@ -34,10 +33,10 @@ class InputGenerator:
         # Reset input_dictionary to ensure unique data for each call
         self.input_dictionary = {}
 
-        from_address = self.generate_random_email()  
+        from_address = self.generate_random_email()
         self.input_dictionary["from_address"] = from_address
 
-        to_address = self.generate_random_email()  
+        to_address = self.generate_random_email()
         self.input_dictionary["to_address"] = to_address
 
         if random_cc_address:
