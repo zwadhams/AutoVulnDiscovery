@@ -233,6 +233,9 @@ class FuzzingHarness:
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         s.connect((server, port))
         response = s.recv(1024)
+        if "refused" in response.decode():
+            logging.error(f"Connection refused on port {port}")
+            return
         logging.info(f"Received: {response.decode().strip()}")
 
         # Send HELO command
