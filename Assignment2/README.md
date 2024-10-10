@@ -38,6 +38,8 @@ Set the random_cc_address to True. Make sure the random_body_length is set to Fa
 To generate random `date` values:<br/>
 Set the `random_date` to True. Make sure the `random_body_length` and `random_cc_address` are set to False. The rest of the process is the same as before.<br/>
 
+## Crash Descriptions
+Please see the pdf assignment2_report for our more detailed descriptions of why we believe each crash occured. 
 
 ## bonus mystery crash
 we also added the exact file/ configuration that had previously caused the code to crash and what the log file was. This was more for fun, and let us know if you have insites. 
