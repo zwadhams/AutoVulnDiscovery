@@ -11,7 +11,7 @@ from multiprocessing import pool
 
 
 random_body_length = False
-random_cc_address = False
+random_cc_address = True
 random_date = False
 
 class InputGenerator:
