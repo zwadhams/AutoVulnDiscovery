@@ -1,3 +1,3 @@
-#### Parser tp use: https://tree-sitter.github.io/tree-sitter/
+#### Parser to use: https://tree-sitter.github.io/tree-sitter/
 
-### SMT solver to use: https://github.com/z3prover/z3
+#### SMT solver to use: https://github.com/z3prover/z3
