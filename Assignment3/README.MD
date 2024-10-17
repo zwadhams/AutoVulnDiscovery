@@ -1,1 +1,3 @@
-### Link to Z3 GitHub: https://github.com/z3prover/z3
+#### Parser tp use: https://tree-sitter.github.io/tree-sitter/
+
+### SMT solver to use: https://github.com/z3prover/z3
