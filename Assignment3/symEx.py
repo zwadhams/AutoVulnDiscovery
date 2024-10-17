@@ -6,6 +6,7 @@ from tree_sitter import Language, Parser
 C_LANG = Language(tsc.language())
 parser = Parser(C_LANG)
 
+# Example path: Assignment3\test_program.c
 def read_c_code_from_file(file_path):
     with open(file_path, 'rb') as file:  # Read as bytes
         return file.read()
