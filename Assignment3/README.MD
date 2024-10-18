@@ -25,4 +25,4 @@ Functionality for each expression below:\
 -[ ] equality (x == y)\
 -[ ] inequality (x < y, x <= y, x > y, x >= y)\
 \
--[ ] Ability to check feasability of states\
+-[ ] Ability to check feasability of states
