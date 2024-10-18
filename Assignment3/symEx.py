@@ -16,6 +16,19 @@ def print_tree(node, indent=""):
     for child in node.children:
         print_tree(child, indent + "  ")
 
+# Potential class structure for handling statements
+state = {}
+# Path constraints (to handle different branches)
+path_constraints = []
+
+class VariableDeclaration:
+    def __init__(self, var_name):
+        self.var_name = var_name
+
+    def execute(self):
+        # Declare a symbolic variable in Z3
+        state[self.var_name] = Int(self.var_name)
+
 def main():
     parser_args = argparse.ArgumentParser(description="Parse a C file using Tree-sitter.")
     parser_args.add_argument("c_file", help="Path to the C file to parse.")
