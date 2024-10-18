@@ -4,6 +4,8 @@ Check out this playground to see what tree-sitter turns C code into: https://tre
 #### SMT solver to use: https://github.com/z3prover/z3
 
 TODO: \
+-[ ] Make description of parsed output\
+-[ ] make note of what to ignore and what to keep (ex, ignore imports)
 -[ ] Function to traverse tree.\
 Functionality for each statement below:\
 -[ ] variable declaration (int x;)\
