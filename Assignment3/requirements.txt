@@ -1,0 +1,5 @@
+z3-solver==4.13.3.0
+tree-sitter==0.23.1
+tree-sitter-c==0.23.1
+argparse==1.4.0
+

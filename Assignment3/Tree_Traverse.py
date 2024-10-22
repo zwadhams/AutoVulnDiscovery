@@ -84,13 +84,14 @@ class SymbolicExecutor:
             self.handle_assignment(node)
         elif node.type == 'if_statement':
             self.handle_if_statement(node)
+        elif node.type == 'while_statement':
+            self.handle_while_statement(node)
+        elif node.type == 'return_statement':
+            self.handle_return(node)
         else:
             print("not handled",node)
 
-        #elif node.type == 'while_statement':
-           # self.handle_while_statement(node)
-
-
+        
         # Recursively visit children nodes
         for child in node.children:
             self.traverse_node(child)
@@ -149,23 +150,37 @@ class SymbolicExecutor:
         self.solver.pop()
 
     def handle_while_statement(self, node):
-        # Similar structure to if_statement, but loop until condition is unsat
+        # Loop until the condition becomes unsat
         condition_node = node.child_by_field_name('condition')
         body_node = node.child_by_field_name('body')
 
-        while self.solver.check(self.current_path_condition) == sat:
+        while True:
             condition = self.evaluate_expression(condition_node)
             loop_condition = And(self.current_path_condition, condition)
 
             self.solver.push()
             self.solver.add(loop_condition)
             if self.solver.check() == sat:
+                print("Loop condition is SAT, continuing")
+                self.SAT += 1
                 self.current_path_condition = loop_condition
                 self.traverse_node(body_node)
+            else:
+                print("Loop condition is UNSAT, breaking")
+                self.UnSAT += 1
+                break
             self.solver.pop()
 
             # Add negation of condition to block further execution
             self.current_path_condition = And(self.current_path_condition, Not(condition))
+
+    def handle_return(self, node):
+        # Track the return value and add it to the constraints
+        return_value_node = node.child_by_field_name('expression')
+        if return_value_node is not None:
+            return_value = self.evaluate_expression(return_value_node)
+            print(f"Return value: {return_value}")
+            self.solver.add(self.current_path_condition == return_value)
 
     def evaluate_expression(self, node):
         # Evaluate expressions such as binary operations, literals, etc.
@@ -198,11 +213,12 @@ class SymbolicExecutor:
 def main():
 
     # I am lazy and don't want to run from the command line everytime, un comment out later.
-    #parser_args = argparse.ArgumentParser(description="Parse a C file using Tree-sitter.")
-    #parser_args.add_argument("c_file", help="Path to the C file to parse.")
-    #args = parser_args.parse_args()
+    parser_args = argparse.ArgumentParser(description="Parse a C file using Tree-sitter.")
+    parser_args.add_argument("c_file", help="Path to the C file to parse.")
+    parser_args.add_argument("function",help="Function to symbolicly execute")
+    args = parser_args.parse_args()
     ## Read C code from the file
-    # c_code = read_c_code_from_file(args.c_file)
+    c_code = read_c_code_from_file(args.c_file)
 
     # Get file path to the c file in question.
     current_directory = os.getcwd()
@@ -220,7 +236,7 @@ def main():
     # printing out the tree
     root_node = tree.root_node
     #print_tree(root_node)
-    Function_to_excute = 'main'
+    Function_to_excute = args.function
     executor = SymbolicExecutor()
     executor.execute(root_node,Function_to_excute)
 
