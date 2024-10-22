@@ -6,20 +6,20 @@ Check out this playground to see what tree-sitter turns C code into: https://tre
 TODO: \
 -[ ] Make description of parsed output\
 -[ ] make note of what to ignore and what to keep (ex, ignore imports)
--[ ] Function to traverse tree.\
+-[x] Function to traverse tree.\
 Functionality for each statement below:\
--[ ] variable declaration (int x;)\
--[ ] variable assignment (int x = y;)\
--[ ] if- and if-else-statements (if (x == 0) { ... }, if (x == 0) { ... } else { ... })\
+-[x] variable declaration (int x;)\
+-[x] variable assignment (int x = y;)\
+-[x] if- and if-else-statements (if (x == 0) { ... }, if (x == 0) { ... } else { ... })\
 -[ ] while loops (while (x < 10) { ... })\
 -[ ] return statements (return x;)\
 Functionality for each expression below:\
 -[ ] integer literals (41)\
 -[ ] integer variables (x)\
--[ ] addition (x + y)\
--[ ] subtraction (x - y)\
--[ ] multiplication (x * y)\
--[ ] division (x / y)\
+-[x] addition (x + y)\
+-[x] subtraction (x - y)\
+-[x] multiplication (x * y)\
+-[x] division (x / y)\
 -[ ] negation (-x)\
 -[ ] pre- and post-increment (++x, x++)\
 -[ ] pre- and post-decrement (--x, x--)\
