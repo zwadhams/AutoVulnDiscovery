@@ -8,6 +8,9 @@ import os
 #   ignore print f
 #   when reaching return 1; save symbolic state add this to the constraints for solver
 #   each branch should create two symbolic states, mark with SAT or UnSAT
+#   fix handle declaration
+
+
 
 C_LANG = Language(tsc.language())
 parser = Parser(C_LANG)
@@ -44,9 +47,16 @@ class SymbolicExecutor:
     def execute(self, root_node,function):
         #first find all the functions and declared variables.
         self.Find_Functions(root_node)
+
         # Then Start at the correct function and go through the steps.
         node = self.functions[function]
         self.traverse_node(node)
+
+        #print outputs:
+        print("Number of infeasible states:" , self.UnSAT)
+        print("Number of feasible states:" , self.SAT)
+        print("Number of Target reached: ", self.targetReached)
+        print("states: ", self.path_conditions)
 
     def Find_Functions(self,node):
     ## First we need to find the functions, so we can start at the one we want
@@ -76,8 +86,11 @@ class SymbolicExecutor:
         if node is None:
             return
 
-        if node.type == 'function_definition':
-            self.handle_function_definition(node)
+        elif node.type =='call_expression':
+            function_name =node.children[0]
+            print(function_name.text.decode('utf-8'))
+            if function_name.text.decode('utf-8') in self.functions:
+                self.traverse_node(self.functions[function_name.text.decode('utf-8')])
         elif node.type == 'declaration':
             self.handle_declaration(node)
         elif node.type == 'assignment_expression':
@@ -98,8 +111,9 @@ class SymbolicExecutor:
         return
 
     def handle_function_definition(self, node):
-        body_node = [n for n in node.children if n.type == 'compound_statement'][0]
-        self.traverse_node(body_node)
+        print(node.children)
+        for child in node.children:
+            self.traverse_node(child)
 
     def handle_declaration(self, node):
         # Extract variable name and initial value (if any)
@@ -139,14 +153,16 @@ class SymbolicExecutor:
         if self.solver.check() == sat:
             self.current_path_condition = true_condition
             self.traverse_node(true_branch)
+            self.SAT = self.SAT +1
         self.solver.pop()
 
         # Branch on the false condition
         self.solver.push()
         self.solver.add(false_condition)
-        if self.solver.check() == sat:
+        if self.solver.check() == unsat:
             self.current_path_condition = false_condition
             self.traverse_node(false_branch)
+            self.UnSAT = self.UnSAT +1
         self.solver.pop()
 
     def handle_while_statement(self, node):
@@ -155,7 +171,7 @@ class SymbolicExecutor:
         body_node = node.child_by_field_name('body')
 
         while True:
-            condition = self.evaluate_expression(condition_node)
+            condition = self.evaluate_expression(condition_node.children[1])
             loop_condition = And(self.current_path_condition, condition)
 
             self.solver.push()
@@ -176,11 +192,14 @@ class SymbolicExecutor:
 
     def handle_return(self, node):
         # Track the return value and add it to the constraints
-        return_value_node = node.child_by_field_name('expression')
+        return_value_node = node.children[1]
         if return_value_node is not None:
             return_value = self.evaluate_expression(return_value_node)
             print(f"Return value: {return_value}")
             self.solver.add(self.current_path_condition == return_value)
+            if return_value_node.text.decode('utf-8') == 1:
+                self.targetReached = self.targetReached +1
+                self.path_conditions.append(self.current_path_condition)
 
     def evaluate_expression(self, node):
         # Evaluate expressions such as binary operations, literals, etc.
@@ -213,12 +232,13 @@ class SymbolicExecutor:
 def main():
 
     # I am lazy and don't want to run from the command line everytime, un comment out later.
-    parser_args = argparse.ArgumentParser(description="Parse a C file using Tree-sitter.")
-    parser_args.add_argument("c_file", help="Path to the C file to parse.")
-    parser_args.add_argument("function",help="Function to symbolicly execute")
-    args = parser_args.parse_args()
+    #parser_args = argparse.ArgumentParser(description="Parse a C file using Tree-sitter.")
+    #parser_args.add_argument("c_file", help="Path to the C file to parse.")
+    #parser_args.add_argument("function",help="Function to symbolicly execute")
+
+    #args = parser_args.parse_args()
     ## Read C code from the file
-    c_code = read_c_code_from_file(args.c_file)
+    #c_code = read_c_code_from_file(args.c_file)
 
     # Get file path to the c file in question.
     current_directory = os.getcwd()
@@ -236,9 +256,10 @@ def main():
     # printing out the tree
     root_node = tree.root_node
     #print_tree(root_node)
-    Function_to_excute = args.function
+    #function_to_execute = args.function
+    function_to_execute = 'main'
     executor = SymbolicExecutor()
-    executor.execute(root_node,Function_to_excute)
+    executor.execute(root_node,function_to_execute)
 
     print("done")
 
