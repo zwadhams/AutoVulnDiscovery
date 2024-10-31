@@ -188,24 +188,25 @@ class SymbolicExecutor:
             self.restore_state()
 # we need to fix this I don't know where to put the save and return to states ahh
     def handle_while_statement(self, node):
-        # Handles while loops by repeatedly checking loop condition feasibility
-        # and traversing the loop body as long as the condition holds
+    # Handles while loops by repeatedly checking loop condition feasibility
+    # and traversing the loop body as long as the condition holds
         condition_node = node.child_by_field_name('condition').children[1]
         body_node = node.child_by_field_name('body')
 
         while True:
             self.save_state()
-            if not self.check_feasibility(condition_node):
+            if self.check_feasibility(condition_node):
                 print("Loop condition is UNSAT, breaking")
-                self.UnSAT += 1
                 self.restore_state()
                 break
-            print("Loop condition is SAT, continuing")
-            self.traverse_node(body_node)
+            else:
+                print("Loop condition is SAT, continuing")
+                self.traverse_node(body_node)
+                self.restore_state()
 
             # Update path condition to prevent infinite loops
-            #self.current_path_condition = And(self.current_path_condition, Not(condition))
-
+            self.current_path_condition = And(self.current_path_condition, Not(condition_node))
+        
     def handle_return(self, node):
         # Processes return statements, checking if they meet the target condition
         return_value_node = node.child_by_field_name('value')
@@ -237,6 +238,10 @@ class SymbolicExecutor:
             solver.add(left > right)
         elif op == '=':
             solver.add(left == right)
+        elif op == '++':
+            solver.add(left + 1 == right)
+        elif op == '--':
+            solver.add(left - 1 == right)
         return
 
     def check_feasibility(self, condition):
@@ -245,6 +250,7 @@ class SymbolicExecutor:
         # initializing all the variables
         for identifier in self.mapping:
             unique_id = Int(identifier)
+
         # add any previous conditions
         for c in self.condition:
             op = self.condition[c].children[1].text.decode()
