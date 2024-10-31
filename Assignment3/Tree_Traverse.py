@@ -11,16 +11,18 @@ import os
 #   fix handle declaration
 
 
-
 C_LANG = Language(tsc.language())
 parser = Parser(C_LANG)
-solver = Solver()
+
+
+# solver = Solver()
 
 
 # Example path: Assignment3\test_program.c
 def read_c_code_from_file(file_path):
     with open(file_path, 'rb') as file:
         return file.read()
+
 
 def print_tree(node, indent=""):
     hold = f"{indent}{node.type} "  # [{node.start_point}, {node.end_point}]
@@ -30,221 +32,249 @@ def print_tree(node, indent=""):
     return
 
 
-
 class SymbolicExecutor:
     def __init__(self):
-        self.solver = Solver()
-        self.symbolic_state = {}
-        self.path_conditions = []
+        # Initializes the Z3 solver for constraint checking
+        # self.solver = Solver()
+        # Dictionary to store function nodes, allowing for function calls
         self.functions = {}
-        self.var_names = []
+        # Maps variable names to their SymbolicVariable instances
+        self.mapping = {}
+        # Counter for generating unique variable identifiers
+        self.counter = 0
+        self.condition = {}
         self.current_path_condition = BoolVal(True)
-        self.SAT = 0 # num of Feasible paths
-        self.UnSAT = 0 # num of infeasible paths
-        self.targetReached = 0 # num of paths that reached target note (targetReached<SAT)
+        # Stack to save and restore states for branching
+        self.saved_states = []
+        # Counters to track feasible and infeasible paths
+        self.SAT = 0
+        self.UnSAT = 0
+        # Counter for paths that meet the target condition `return 1;`
+        self.targetReached = 0
 
+    def save_state(self):
+        # Saves the current state by storing the path condition,
+        # variable mappings, and counter in the saved states stack.
+        state = {
+            "conditions": self.condition,
+            "mapping": self.mapping.copy(),
+            "counter": self.counter
+        }
+        self.saved_states.append(state)
+        print("State saved.")
 
-    def execute(self, root_node,function):
-        #first find all the functions and declared variables.
+    def restore_state(self):
+        # Restores the last saved state, including the path condition,
+        # variable mappings, and counter.
+        if self.saved_states:
+            state = self.saved_states.pop()
+            self.condition = state["conditions"]
+            self.mapping = state["mapping"]
+            self.counter = state["counter"]
+            print("State restored.")
+        else:
+            print("No saved state to restore.")
+
+    def execute(self, root_node, function):
+        # Main entry point to execute the symbolic interpreter on a function
+        # Parses all functions from the root node and then begins traversing
+        # the specified function node
         self.Find_Functions(root_node)
-
-        # Then Start at the correct function and go through the steps.
         node = self.functions[function]
         self.traverse_node(node)
+        # Outputs results on paths after execution
+        print("Number of infeasible states:", self.UnSAT)
+        print("Number of feasible states:", self.SAT)
+        print("Number of Target reached:", self.targetReached)
 
-        #print outputs:
-        print("Number of infeasible states:" , self.UnSAT)
-        print("Number of feasible states:" , self.SAT)
-        print("Number of Target reached: ", self.targetReached)
-        print("states: ", self.path_conditions)
-
-    def Find_Functions(self,node):
-    ## First we need to find the functions, so we can start at the one we want
-    ## we also add in the variables that get declared, so that we can account for global ones later
-
+    def Find_Functions(self, node):
+        # Recursive function to locate and store all function definitions
+        # within the code tree. Assumes function name is the first child node.
         if node.type == 'function_definition':
             declarator_node = node.child_by_field_name('declarator')
-            function_name_node = declarator_node.children[0]  # Get the function name
-            function_name = function_name_node.text.decode('utf-8')  # Decode it to a string
-            self.functions[function_name] = node  # Store the function name and corresponding node
-            print("Function found: ",function_name)
-
-        # keep track of names declared, adding them to the symbolic state here to handle global values
+            function_name_node = declarator_node.children[0]
+            function_name = function_name_node.text.decode('utf-8')
+            self.functions[function_name] = node
+            print("Function found:", function_name)
         elif node.type == 'declaration':
+            # Processes variable declarations
             self.handle_declaration(node)
-
-        else:
-            # not a function so we pass
-            pass
-
-        # Recursively visit children nodes
         for child in node.children:
             self.Find_Functions(child)
 
-    def traverse_node(self,node):
-
+    def traverse_node(self, node):
+        # Traverses each node type in the function body and delegates handling
+        # of specific node types to helper methods based on functionality
         if node is None:
             return
-
-        elif node.type =='call_expression':
-            function_name =node.children[0]
-            print(function_name.text.decode('utf-8'))
-            if function_name.text.decode('utf-8') in self.functions:
-                self.traverse_node(self.functions[function_name.text.decode('utf-8')])
+        elif node.type == 'call_expression':
+            # Handles function calls if the called function is in the stored dictionary
+            function_name = node.children[0].text.decode('utf-8')
+            if function_name in self.functions:
+                self.traverse_node(self.functions[function_name])
         elif node.type == 'declaration':
+            # Declaration node for new variable declarations
             self.handle_declaration(node)
         elif node.type == 'assignment_expression':
+            # Assignment node for updating variable values
             self.handle_assignment(node)
         elif node.type == 'if_statement':
+            # Conditional branching
             self.handle_if_statement(node)
+        # just trying to make sure if works then we will go to this.
         elif node.type == 'while_statement':
+        #     # Loops, handled similarly to conditionals but with iterative feasibility checking
             self.handle_while_statement(node)
-        elif node.type == 'return_statement':
-            self.handle_return(node)
+        # elif node.type == 'return_statement':
+        #     # Handles return statements, with specific handling for the target `return 1`
+        #     self.handle_return(node)
         else:
-            print("not handled",node)
+            pass
 
-        
-        # Recursively visit children nodes
-        for child in node.children:
-            self.traverse_node(child)
-        return
-
-    def handle_function_definition(self, node):
-        print(node.children)
+        # Recursively traverses child nodes
         for child in node.children:
             self.traverse_node(child)
 
     def handle_declaration(self, node):
-        # Extract variable name and initial value (if any)
-        var_name = node.child_by_field_name('declarator').text.decode()
-        init_value = node.child_by_field_name('value')
-        if init_value is not None:
-            # Handle initialization with a symbolic value
-            sym_value = self.evaluate_expression(init_value)
-            self.symbolic_state[var_name] = sym_value
+        # Just getting the values
+        declarator_node = node.child_by_field_name('declarator')
+
+        # Generates a unique identifier for the symbolic variable
+        unique_id = f'X{self.counter}'
+        self.counter += 1  # add to counter so ids are unique.
+
+        if not declarator_node.children:
+            # create a mapping for example int x: x->X1
+            self.mapping[declarator_node.text.decode()] = unique_id
+            print(f"Declared variable {declarator_node.text.decode()} mapped to {unique_id}")
         else:
-            # If no initial value, create an unconstrained symbolic variable
-            self.symbolic_state[var_name] = Int(var_name)
-        print(f"Declared variable {var_name} with value {self.symbolic_state[var_name]}")
+            # Extracts the variable name
+            var_name = declarator_node.children[0].text.decode()
+            # add the values to the map and conditions.
+            self.mapping[var_name] = unique_id
+            self.condition[unique_id] = declarator_node
+
+            print(f"Declared variable {var_name} mapped to {unique_id} with value: {declarator_node.text.decode()}")
 
     def handle_assignment(self, node):
+        # Updates a variable with a new condition
         var_name = node.child_by_field_name('left').text.decode()
         expr = node.child_by_field_name('right')
-        value = self.evaluate_expression(expr)
-        self.symbolic_state[var_name] = value
-        print(f"Assigned {var_name} = {value}")
+        # value = self.evaluate_expression(expr)
+        if var_name in self.mapping:
+            symbolic_var = self.mapping[var_name]
+            self.condition[symbolic_var] = node  # should never
+        print(f"Assigned {var_name} = {node} ")
 
     def handle_if_statement(self, node):
-
-        condition_p = node.children[1]
-        # Process the condition and branches
-        condition_node = condition_p.children[1]
+        # Handles if statements by creating branches for true and false conditions
+        condition_node = node.child_by_field_name('condition')
         true_branch = node.child_by_field_name('consequence')
         false_branch = node.child_by_field_name('alternative')
 
-        condition = self.evaluate_expression(condition_node)
-        true_condition = And(self.current_path_condition, condition)
-        false_condition = And(self.current_path_condition, Not(condition))
+        new_condition = condition_node.children[1]
+        # True branch feasibility check and traversal if feasible
+        if self.check_feasibility(new_condition):
 
-        # Branch on the true condition
-        self.solver.push()
-        self.solver.add(true_condition)
-        if self.solver.check() == sat:
-            self.current_path_condition = true_condition
+            self.save_state()  # save the state and then traverse this branch
             self.traverse_node(true_branch)
-            self.SAT = self.SAT +1
-        self.solver.pop()
+            self.SAT += 1  # satisfiable condition
+            self.restore_state()  # go back to the previous state and try the other side of the condition
 
-        # Branch on the false condition
-        self.solver.push()
-        self.solver.add(false_condition)
-        if self.solver.check() == unsat:
-            self.current_path_condition = false_condition
+        else:
+            self.save_state()
             self.traverse_node(false_branch)
-            self.UnSAT = self.UnSAT +1
-        self.solver.pop()
-
+            self.UnSAT += 1
+            self.restore_state()
+# we need to fix this I don't know where to put the save and return to states ahh
     def handle_while_statement(self, node):
-        # Loop until the condition becomes unsat
-        condition_node = node.child_by_field_name('condition')
+        # Handles while loops by repeatedly checking loop condition feasibility
+        # and traversing the loop body as long as the condition holds
+        condition_node = node.child_by_field_name('condition').children[1]
         body_node = node.child_by_field_name('body')
 
         while True:
-            condition = self.evaluate_expression(condition_node.children[1])
-            loop_condition = And(self.current_path_condition, condition)
-
-            self.solver.push()
-            self.solver.add(loop_condition)
-            if self.solver.check() == sat:
-                print("Loop condition is SAT, continuing")
-                self.SAT += 1
-                self.current_path_condition = loop_condition
-                self.traverse_node(body_node)
-            else:
+            self.save_state()
+            if not self.check_feasibility(condition_node):
                 print("Loop condition is UNSAT, breaking")
                 self.UnSAT += 1
+                self.restore_state()
                 break
-            self.solver.pop()
+            print("Loop condition is SAT, continuing")
+            self.traverse_node(body_node)
 
-            # Add negation of condition to block further execution
-            self.current_path_condition = And(self.current_path_condition, Not(condition))
+            # Update path condition to prevent infinite loops
+            #self.current_path_condition = And(self.current_path_condition, Not(condition))
 
     def handle_return(self, node):
-        # Track the return value and add it to the constraints
-        return_value_node = node.children[1]
+        # Processes return statements, checking if they meet the target condition
+        return_value_node = node.child_by_field_name('value')
         if return_value_node is not None:
             return_value = self.evaluate_expression(return_value_node)
-            print(f"Return value: {return_value}")
-            self.solver.add(self.current_path_condition == return_value)
-            if return_value_node.text.decode('utf-8') == 1:
-                self.targetReached = self.targetReached +1
-                self.path_conditions.append(self.current_path_condition)
+            if return_value == IntVal(1):
+                # Increments target counter if the return value matches target
+                self.targetReached += 1
+                print("Target reached!")
+            else:
+                print("Non-target return reached")
 
-    def evaluate_expression(self, node):
-        # Evaluate expressions such as binary operations, literals, etc.
-        if node.type == 'identifier':
-            var_name = node.text.decode()
-            return self.symbolic_state.get(var_name, Int(var_name))
-        elif node.type == 'number_literal':
-            return IntVal(int(node.text.decode()))
-        elif node.type == 'binary_expression':
-            left = self.evaluate_expression(node.child_by_field_name('left'))
-            right = self.evaluate_expression(node.child_by_field_name('right'))
-            op = node.child_by_field_name('operator').text.decode()
-            if op == '+':
-                return left + right
-            elif op == '-':
-                return left - right
-            elif op == '*':
-                return left * right
-            elif op == '/':
-                return left / right
-            elif op == '==':
-                return left == right
-            elif op == '<':
-                return left < right
-            elif op == '>':
-                return left > right
-        # Add support for other types of expressions as needed
-        return None
+
+    def z3_condition_add(self, solver, op, left, right):
+        # Applies basic operators in Z3 to form a symbolic expression
+        if op == '+':
+            solver.add(left + right)
+        elif op == '-':
+            solver.add(left - right)
+        elif op == '*':
+            solver.add(left * right)
+        elif op == '/':
+            solver.add(left / right)
+        elif op == '==':
+            solver.add(left == right)
+        elif op == '<':
+            solver.add(left < right)
+        elif op == '>':
+            solver.add(left > right)
+        elif op == '=':
+            solver.add(left == right)
+        return
+
+    def check_feasibility(self, condition):
+        solver = Solver()
+
+        # initializing all the variables
+        for identifier in self.mapping:
+            unique_id = Int(identifier)
+        # add any previous conditions
+        for c in self.condition:
+            op = self.condition[c].children[1].text.decode()
+            right = self.condition[c].children[0].text.decode()
+            left = self.condition[c].children[2].text.decode()
+            self.z3_condition_add(solver,op, left, right)
+
+        op = condition.children[1].text.decode()
+        right = condition.children[0].text.decode()
+        left = condition.children[2].text.decode()
+        self.z3_condition_add(solver,op, left, right)
+
+        result = solver.check() == sat
+        return result
+
 
 def main():
-
     # I am lazy and don't want to run from the command line everytime, un comment out later.
-    #parser_args = argparse.ArgumentParser(description="Parse a C file using Tree-sitter.")
-    #parser_args.add_argument("c_file", help="Path to the C file to parse.")
-    #parser_args.add_argument("function",help="Function to symbolicly execute")
+    # parser_args = argparse.ArgumentParser(description="Parse a C file using Tree-sitter.")
+    # parser_args.add_argument("c_file", help="Path to the C file to parse.")
+    # parser_args.add_argument("function",help="Function to symbolically execute")
 
-    #args = parser_args.parse_args()
+    # args = parser_args.parse_args()
     ## Read C code from the file
-    #c_code = read_c_code_from_file(args.c_file)
+    # c_code = read_c_code_from_file(args.c_file)
 
     # Get file path to the c file in question.
     current_directory = os.getcwd()
     file_name = "test_program.c"
     file_path = os.path.join(current_directory, file_name)
-
 
     # read in c code
     c_code = read_c_code_from_file(file_path)
@@ -252,21 +282,59 @@ def main():
     # parse the code using tree sitter
     tree = parser.parse(c_code)
 
-
     # printing out the tree
     root_node = tree.root_node
-    #print_tree(root_node)
-    #function_to_execute = args.function
+    # print_tree(root_node)
+    # function_to_execute = args.function
     function_to_execute = 'main'
     executor = SymbolicExecutor()
-    executor.execute(root_node,function_to_execute)
+    executor.execute(root_node, function_to_execute)
 
     print("done")
 
 
-
-
 main()
 
-
-
+# def evaluate_expression(self, node):
+#     # Converts various expression types into Z3 symbolic expressions
+#     if node.type == 'identifier':
+#         # Resolves variable identifier to its symbolic variable
+#         var_name = node.text.decode()
+#         # if this value has conditions on it already.
+#         if var_name in self.mapping:
+#             value = self.mapping[var_name]
+#
+#         else:
+#             value = Int(var_name)
+#
+#         return value
+#     elif node.type == 'number_literal':
+#         # Handles numeric literals directly
+#         return IntVal(int(node.text.decode()))
+#     elif node.type == 'binary_expression':
+#         # Evaluates binary expressions recursively
+#         left = self.evaluate_expression(node.child_by_field_name('left'))
+#         right = self.evaluate_expression(node.child_by_field_name('right'))
+#         op = node.child_by_field_name('operator').text.decode()
+#         return self.apply_operator(op, left, right)
+#     return None
+#
+# def apply_operator(self, op, left, right):
+#     # Applies basic operators in Z3 to form a symbolic expression
+#     if op == '+':
+#         return left + right
+#     elif op == '-':
+#         return left - right
+#     elif op == '*':
+#         return left * right
+#     elif op == '/':
+#         return left / right
+#     elif op == '==':
+#         return left == right
+#     elif op == '<':
+#         return left < right
+#     elif op == '>':
+#         return left > right
+#     elif op == '=':
+#         return left == right
+#     return None
