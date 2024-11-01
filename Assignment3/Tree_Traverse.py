@@ -102,11 +102,35 @@ class SymbolicExecutor:
         for child in node.children:
             self.Find_Functions(child)
 
+    # Example helper functions for increment and decrement
+    def handle_increment(self, var_name):
+        # Assuming self.symbolic_state holds the current symbolic variable states
+        if var_name in self.mapping:
+            self.condition[self.mapping[var_name]] = self.mapping[var_name] + 1  # Increment symbolic state
+        else:
+            raise KeyError(f"Variable {var_name} not found in symbolic state.")
+
+    def handle_decrement(self, var_name):
+        if var_name in self.mapping:
+            self.condition[self.mapping[var_name]] = self.mapping[var_name] - 1  # Decrement symbolic state
+        else:
+            raise KeyError(f"Variable {var_name} not found in symbolic state.")
+
     def traverse_node(self, node):
         # Traverses each node type in the function body and delegates handling
         # of specific node types to helper methods based on functionality
         if node is None:
             return
+        elif node.type =='update_expression':
+            # Handle increment (++) and decrement (--) expressions
+            expression_text = node.text.decode('utf-8').strip()  # Get the expression text
+            if expression_text.endswith('++'):
+                var_name = expression_text[:-2].strip()
+                self.handle_increment(var_name)
+            elif expression_text.endswith('--'):
+                var_name = expression_text[:-2].strip()
+                self.handle_decrement(var_name)
+
         elif node.type == 'call_expression':
             # Handles function calls if the called function is in the stored dictionary
             function_name = node.children[0].text.decode('utf-8')
@@ -193,19 +217,20 @@ class SymbolicExecutor:
         condition_node = node.child_by_field_name('condition').children[1]
         body_node = node.child_by_field_name('body')
 
+
         while True:
             self.save_state()
             if self.check_feasibility(condition_node):
                 print("Loop condition is UNSAT, breaking")
-                self.restore_state()
+                #self.restore_state()
                 break
             else:
                 print("Loop condition is SAT, continuing")
                 self.traverse_node(body_node)
-                self.restore_state()
+                #self.restore_state()
 
             # Update path condition to prevent infinite loops
-            self.current_path_condition = And(self.current_path_condition, Not(condition_node))
+            #self.current_path_condition = And(self.current_path_condition, Not(condition_node))
         
     def handle_return(self, node):
         # Processes return statements, checking if they meet the target condition
