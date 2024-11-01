@@ -10,12 +10,15 @@ import os
 #   each branch should create two symbolic states, mark with SAT or UnSAT
 #   fix handle declaration
 
+# handle variables given in the function def test(x)
+# make return statements reset back up to the top of the stack
+# fix up while loop
+
+
 
 C_LANG = Language(tsc.language())
 parser = Parser(C_LANG)
 
-
-# solver = Solver()
 
 
 # Example path: Assignment3\test_program.c
@@ -34,8 +37,7 @@ def print_tree(node, indent=""):
 
 class SymbolicExecutor:
     def __init__(self):
-        # Initializes the Z3 solver for constraint checking
-        # self.solver = Solver()
+
         # Dictionary to store function nodes, allowing for function calls
         self.functions = {}
         # Maps variable names to their SymbolicVariable instances
@@ -52,13 +54,15 @@ class SymbolicExecutor:
         # Counter for paths that meet the target condition `return 1;`
         self.targetReached = 0
 
-    def save_state(self):
+    def save_state(self,next_node):
         # Saves the current state by storing the path condition,
         # variable mappings, and counter in the saved states stack.
         state = {
             "conditions": self.condition,
             "mapping": self.mapping.copy(),
-            "counter": self.counter
+            "counter": self.counter,
+            "next_state": next_node
+            # add next state to execute
         }
         self.saved_states.append(state)
         print("State saved.")
@@ -71,9 +75,13 @@ class SymbolicExecutor:
             self.condition = state["conditions"]
             self.mapping = state["mapping"]
             self.counter = state["counter"]
+
             print("State restored.")
+            return state["next_node"]
+
         else:
             print("No saved state to restore.")
+            return
 
     def execute(self, root_node, function):
         # Main entry point to execute the symbolic interpreter on a function
@@ -96,46 +104,24 @@ class SymbolicExecutor:
             function_name = function_name_node.text.decode('utf-8')
             self.functions[function_name] = node
             print("Function found:", function_name)
-        elif node.type == 'declaration':
-            # Processes variable declarations
-            self.handle_declaration(node)
         for child in node.children:
             self.Find_Functions(child)
-
-    # Example helper functions for increment and decrement
-    def handle_increment(self, var_name):
-        # Assuming self.symbolic_state holds the current symbolic variable states
-        if var_name in self.mapping:
-            self.condition[self.mapping[var_name]] = self.mapping[var_name] + 1  # Increment symbolic state
-        else:
-            raise KeyError(f"Variable {var_name} not found in symbolic state.")
-
-    def handle_decrement(self, var_name):
-        if var_name in self.mapping:
-            self.condition[self.mapping[var_name]] = self.mapping[var_name] - 1  # Decrement symbolic state
-        else:
-            raise KeyError(f"Variable {var_name} not found in symbolic state.")
 
     def traverse_node(self, node):
         # Traverses each node type in the function body and delegates handling
         # of specific node types to helper methods based on functionality
         if node is None:
             return
+
         elif node.type =='update_expression':
             # Handle increment (++) and decrement (--) expressions
             expression_text = node.text.decode('utf-8').strip()  # Get the expression text
             if expression_text.endswith('++'):
                 var_name = expression_text[:-2].strip()
-                self.handle_increment(var_name)
+                self.condition[self.mapping[var_name]] = [self.mapping[var_name], '++', 1, False]
             elif expression_text.endswith('--'):
                 var_name = expression_text[:-2].strip()
-                self.handle_decrement(var_name)
-
-        elif node.type == 'call_expression':
-            # Handles function calls if the called function is in the stored dictionary
-            function_name = node.children[0].text.decode('utf-8')
-            if function_name in self.functions:
-                self.traverse_node(self.functions[function_name])
+                self.condition[self.mapping[var_name]] = [self.mapping[var_name], '--', 1, False]
         elif node.type == 'declaration':
             # Declaration node for new variable declarations
             self.handle_declaration(node)
@@ -145,13 +131,13 @@ class SymbolicExecutor:
         elif node.type == 'if_statement':
             # Conditional branching
             self.handle_if_statement(node)
-        # just trying to make sure if works then we will go to this.
-        elif node.type == 'while_statement':
-        #     # Loops, handled similarly to conditionals but with iterative feasibility checking
-            self.handle_while_statement(node)
-        # elif node.type == 'return_statement':
-        #     # Handles return statements, with specific handling for the target `return 1`
-        #     self.handle_return(node)
+            # we need to change the node here, so we don't traverse the while statement again later.
+
+        # elif node.type == 'while_statement':
+        #     self.handle_while_statement(node)
+
+        elif node.type == 'return_statement':
+            self.handle_return(node)
         else:
             pass
 
@@ -159,36 +145,112 @@ class SymbolicExecutor:
         for child in node.children:
             self.traverse_node(child)
 
+    def z3_condition_add(self, solver, op, left, right,inv):
+        # Applies basic operators in Z3 to form a symbolic expression
+        if op == '+':
+            solver.add(left + right)
+        elif op == '-':
+            solver.add(left - right)
+        elif op == '*':
+            solver.add(left * right)
+        elif op == '/':
+            solver.add(left / right)
+        elif op == '==':
+            if inv:
+                solver.add(not(left == right))
+            else:
+                solver.add(left == right)
+        elif op == '<':
+            if inv:
+                solver.add(not(left<right))
+            else:
+                solver.add(left < right)
+        elif op == '>':
+            if inv:
+                solver.add(not(left>right))
+            else:
+                solver.add(left > right)
+        elif op == '=':
+            solver.add(left == right)
+        elif op == '++':
+            solver.add(left + right )
+        elif op == '--':
+            solver.add(left + right)
+        return
+
+    def check_feasibility(self, condition,inv):
+        solver = Solver()
+
+        # fix this needs to be unique vars only
+        # initializing all the variables
+        for identifier in self.mapping:
+            unique_id = Int(identifier)
+
+        # add any previous conditions
+        for c in self.condition:
+            op = self.condition[c][1]
+            right = self.condition[c][0]
+            left = self.condition[c][2]
+            inv = self.condition[c][3]
+            self.z3_condition_add(solver, op, left, right,inv)
+
+        op = condition.children[1].text.decode()
+        right = condition.children[0].text.decode()
+        left = condition.children[2].text.decode()
+        self.z3_condition_add(solver,op, left, right,inv)
+
+        result = solver.check() == sat
+        return result
+
     def handle_declaration(self, node):
         # Just getting the values
-        declarator_node = node.child_by_field_name('declarator')
+        dNode = node.child_by_field_name('declarator')
 
         # Generates a unique identifier for the symbolic variable
-        unique_id = f'X{self.counter}'
+        symbolic_var = f'X{self.counter}'
         self.counter += 1  # add to counter so ids are unique.
 
-        if not declarator_node.children:
+        if not dNode.children:
             # create a mapping for example int x: x->X1
-            self.mapping[declarator_node.text.decode()] = unique_id
-            print(f"Declared variable {declarator_node.text.decode()} mapped to {unique_id}")
+            self.mapping[dNode.text.decode()] = symbolic_var
+            print(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
         else:
-            # Extracts the variable name
-            var_name = declarator_node.children[0].text.decode()
-            # add the values to the map and conditions.
-            self.mapping[var_name] = unique_id
-            self.condition[unique_id] = declarator_node
+            # x1-> c[[X1,<,10,False],[X1 = 10]]
 
-            print(f"Declared variable {var_name} mapped to {unique_id} with value: {declarator_node.text.decode()}")
+            var_name = dNode.children[0].text.decode()
+            self.mapping[var_name] = symbolic_var
+
+            left = dNode.children[2]
+            if left.type == 'call_expression':
+                # this is a function, and we just want this symbolic var to be a generic Int to the solver
+                # later when we feed the mappings to the solver this will happen (Int(symbolic_var))
+                print(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
+                pass
+
+            else:
+                # conditions, operator, right and left side of the variable
+                op = dNode.children[1].text.decode()
+                right = dNode.children[0].text.decode()
+                inv = False  # for not conditions only with boolean operators.
+                self.condition[symbolic_var] = [op, right, left.text.decode(), inv]
+                print(f" {dNode.text.decode()} mapped to {symbolic_var}")
 
     def handle_assignment(self, node):
+
         # Updates a variable with a new condition
         var_name = node.child_by_field_name('left').text.decode()
-        expr = node.child_by_field_name('right')
-        # value = self.evaluate_expression(expr)
         if var_name in self.mapping:
             symbolic_var = self.mapping[var_name]
-            self.condition[symbolic_var] = node  # should never
-        print(f"Assigned {var_name} = {node} ")
+
+            # conditions, operator, right and left side of the variable
+            op = node.children[1].text.decode()
+            right = node.children[0].text.decode()
+            left = node.children[2].text.decode()
+            inv = False  # for not conditions only with boolean operators.
+            self.condition[symbolic_var] = [op, right, left, inv]
+            print(f"Assigned {var_name} = {node} ")
+        else:
+            print(f"{var_name} assinging value that hasn't been defined")
 
     def handle_if_statement(self, node):
         # Handles if statements by creating branches for true and false conditions
@@ -198,40 +260,42 @@ class SymbolicExecutor:
 
         new_condition = condition_node.children[1]
         # True branch feasibility check and traversal if feasible
-        if self.check_feasibility(new_condition):
-
-            self.save_state()  # save the state and then traverse this branch
-            self.traverse_node(true_branch)
+        if self.check_feasibility(new_condition,False):
             self.SAT += 1  # satisfiable condition
-            self.restore_state()  # go back to the previous state and try the other side of the condition
+            self.save_state(node.next_sibling())  # save the state and then traverse this branch
+            self.traverse_node(true_branch)
 
-        else:
-            self.save_state()
+
+        elif (self.check_feasibility(new_condition,True)) and (false_branch is not None):
+            self.save_state(node.next_sibling())
             self.traverse_node(false_branch)
             self.UnSAT += 1
-            self.restore_state()
-# we need to fix this I don't know where to put the save and return to states ahh
+
+        else:
+            self.UnSAT += 1
+
+        return
+
     def handle_while_statement(self, node):
-    # Handles while loops by repeatedly checking loop condition feasibility
-    # and traversing the loop body as long as the condition holds
+        # Handles while loops by repeatedly checking loop condition feasibility
+        # and traversing the loop body as long as the condition holds
         condition_node = node.child_by_field_name('condition').children[1]
         body_node = node.child_by_field_name('body')
-
 
         while True:
             self.save_state()
             if self.check_feasibility(condition_node):
                 print("Loop condition is UNSAT, breaking")
-                #self.restore_state()
+                # self.restore_state()
                 break
             else:
                 print("Loop condition is SAT, continuing")
                 self.traverse_node(body_node)
-                #self.restore_state()
+                # self.restore_state()
 
             # Update path condition to prevent infinite loops
-            #self.current_path_condition = And(self.current_path_condition, Not(condition_node))
-        
+            # self.current_path_condition = And(self.current_path_condition, Not(condition_node))
+
     def handle_return(self, node):
         # Processes return statements, checking if they meet the target condition
         return_value_node = node.child_by_field_name('value')
@@ -243,53 +307,6 @@ class SymbolicExecutor:
                 print("Target reached!")
             else:
                 print("Non-target return reached")
-
-
-    def z3_condition_add(self, solver, op, left, right):
-        # Applies basic operators in Z3 to form a symbolic expression
-        if op == '+':
-            solver.add(left + right)
-        elif op == '-':
-            solver.add(left - right)
-        elif op == '*':
-            solver.add(left * right)
-        elif op == '/':
-            solver.add(left / right)
-        elif op == '==':
-            solver.add(left == right)
-        elif op == '<':
-            solver.add(left < right)
-        elif op == '>':
-            solver.add(left > right)
-        elif op == '=':
-            solver.add(left == right)
-        elif op == '++':
-            solver.add(left + 1 == right)
-        elif op == '--':
-            solver.add(left - 1 == right)
-        return
-
-    def check_feasibility(self, condition):
-        solver = Solver()
-
-        # initializing all the variables
-        for identifier in self.mapping:
-            unique_id = Int(identifier)
-
-        # add any previous conditions
-        for c in self.condition:
-            op = self.condition[c].children[1].text.decode()
-            right = self.condition[c].children[0].text.decode()
-            left = self.condition[c].children[2].text.decode()
-            self.z3_condition_add(solver,op, left, right)
-
-        op = condition.children[1].text.decode()
-        right = condition.children[0].text.decode()
-        left = condition.children[2].text.decode()
-        self.z3_condition_add(solver,op, left, right)
-
-        result = solver.check() == sat
-        return result
 
 
 def main():
@@ -317,7 +334,7 @@ def main():
     root_node = tree.root_node
     # print_tree(root_node)
     # function_to_execute = args.function
-    function_to_execute = 'main'
+    function_to_execute = 'test'
     executor = SymbolicExecutor()
     executor.execute(root_node, function_to_execute)
 
@@ -326,46 +343,3 @@ def main():
 
 main()
 
-# def evaluate_expression(self, node):
-#     # Converts various expression types into Z3 symbolic expressions
-#     if node.type == 'identifier':
-#         # Resolves variable identifier to its symbolic variable
-#         var_name = node.text.decode()
-#         # if this value has conditions on it already.
-#         if var_name in self.mapping:
-#             value = self.mapping[var_name]
-#
-#         else:
-#             value = Int(var_name)
-#
-#         return value
-#     elif node.type == 'number_literal':
-#         # Handles numeric literals directly
-#         return IntVal(int(node.text.decode()))
-#     elif node.type == 'binary_expression':
-#         # Evaluates binary expressions recursively
-#         left = self.evaluate_expression(node.child_by_field_name('left'))
-#         right = self.evaluate_expression(node.child_by_field_name('right'))
-#         op = node.child_by_field_name('operator').text.decode()
-#         return self.apply_operator(op, left, right)
-#     return None
-#
-# def apply_operator(self, op, left, right):
-#     # Applies basic operators in Z3 to form a symbolic expression
-#     if op == '+':
-#         return left + right
-#     elif op == '-':
-#         return left - right
-#     elif op == '*':
-#         return left * right
-#     elif op == '/':
-#         return left / right
-#     elif op == '==':
-#         return left == right
-#     elif op == '<':
-#         return left < right
-#     elif op == '>':
-#         return left > right
-#     elif op == '=':
-#         return left == right
-#     return None
