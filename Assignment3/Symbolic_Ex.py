@@ -10,6 +10,10 @@ import os
 # conditions shouldn't be attached to specific symbolic vars, just left and right sides if left side is an operations do some step.
 # need to updated conditions to handle the left side. so X = X+Y doesn't feed the solver X0 = X+Y  should be X0 = X0 + X1 for example.
 
+#Given conditions reached what was the state at that time
+
+
+
 C_LANG = Language(tsc.language())
 parser = Parser(C_LANG)
 
@@ -39,7 +43,7 @@ class SymbolicExecutor:
         # Counter for generating unique variable identifiers
         self.counter = 0
         self.condition = []
-        self.current_path_condition = BoolVal(True)
+        #self.current_path_condition = BoolVal(True)
         # Stack to save and restore states for branching
         self.saved_states = []
         # Counters to track feasible and infeasible paths
@@ -144,13 +148,15 @@ class SymbolicExecutor:
         # Applies basic operators in Z3 to form a symbolic expression
         # fix
         if op == '+':
-            solver.add(left + right)
+            solver.add(left =  right)
         elif op == '-':
-            solver.add(left - right)
+            solver.add(left =  right)
         elif op == '*':
-            solver.add(left * right)
+            solver.add(left = right)
         elif op == '/':
-            solver.add(left / right)
+            solver.add(left = right)
+
+        # boolean operators
         elif op == '==':
             if inv:
                 solver.add(not(left == right))
@@ -166,6 +172,7 @@ class SymbolicExecutor:
                 solver.add(not(left>right))
             else:
                 solver.add(left > right)
+
         elif op == '=':
             solver.add(left == right)
         elif op == '++':
@@ -178,11 +185,9 @@ class SymbolicExecutor:
         solver = Solver()
 
 
-        for identifier, assignments in self.mapping.items():
-            if assignments:  # Check if there are any assignments in the list
-                # Get the most recent assignment (last item in the list)
-                most_recent_assignment = assignments[-1]
-                unique_id = Int(most_recent_assignment)
+        for m in self.mapping.items():
+            for sv in m[1]:
+                unique_id = Int(sv)
                 solver.add(Distinct(unique_id)) # add variables to the solver.
 
 
@@ -219,7 +224,6 @@ class SymbolicExecutor:
             print(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
         else:
             # x1-> c[[X1,<,10,False],[X1 = 10]]
-
             var_name = dNode.children[0].text.decode()
             # Initialize the stack for this variable if it doesn't exist
             self.mapping[var_name] = []
@@ -243,7 +247,7 @@ class SymbolicExecutor:
                 print(f" {dNode.text.decode()} mapped to {symbolic_var}")
 
     def handle_assignment(self, node):
-
+        # should only occur when x = something new
         # Updates a variable with a new condition
         var_name = node.child_by_field_name('left').text.decode()
         if var_name in self.mapping:
@@ -282,21 +286,22 @@ class SymbolicExecutor:
         else:
             self.UnSAT += 1
 
-        # False branch feasibility check and traversal if feasible
-        if (self.check_feasibility(new_condition,True)) and (false_branch is not None):
-            print("Else statement", new_condition.text.decode())
-            # add the new condition to the branches
-            op = new_condition.children[1].text.decode()
-            right = self.mapping[new_condition.children[0].text.decode()][-1] # get symbolic var at this point
-            left = self.mapping[new_condition.children[2].text.decode()][-1]  # get symbolic var at this point
-            self.condition.append([right, op, left, True])
+        if (false_branch is not None):
+            # False branch feasibility check and traversal if feasible
+            if (self.check_feasibility(new_condition,True)):
+                print("Else statement", new_condition.text.decode())
+                # add the new condition to the branches
+                op = new_condition.children[1].text.decode()
+                right = self.mapping[new_condition.children[0].text.decode()][-1] # get symbolic var at this point
+                left = self.mapping[new_condition.children[2].text.decode()][-1]  # get symbolic var at this point
+                self.condition.append([right, op, left, True])
 
-            self.save_state(node.next_sibling)
-            self.traverse_node(false_branch)
-            self.SAT += 1
+                self.save_state(node.next_sibling)
+                self.traverse_node(false_branch)
+                self.SAT += 1
 
-        else:
-            self.UnSAT += 1
+            else:
+                self.UnSAT += 1
         return
 
     def handle_while_statement(self, node):
@@ -367,6 +372,7 @@ def main():
     executor.execute(root_node, function_to_execute)
 
     print("done")
+    return
 
 
 main()
