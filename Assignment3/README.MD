@@ -1,3 +1,11 @@
+Steps to run:
+
+TODO
+
+
+
+
+DELETE EVERYTHING BELOW UPON TURNIN
 #### Parser to use: https://tree-sitter.github.io/tree-sitter/  
 Check out this playground to see what tree-sitter turns C code into: https://tree-sitter.github.io/tree-sitter/playground
 
