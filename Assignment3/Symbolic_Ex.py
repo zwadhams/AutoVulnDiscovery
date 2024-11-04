@@ -4,17 +4,11 @@ import tree_sitter_c as tsc
 from tree_sitter import Language, Parser
 import os
 
-# to do notes from hw :
-#   ignore print f
-#   when reaching return 1; save symbolic state add this to the constraints for solver
-#   each branch should create two symbolic states, mark with SAT or UnSAT
-#   fix handle declaration
-
-# handle variables given in the function def test(x)
-# make return statements reset back up to the top of the stack
-# fix up while loop
 
 
+
+# conditions shouldn't be attached to specific symbolic vars, just left and right sides if left side is an operations do some step.
+# need to updated conditions to handle the left side. so X = X+Y doesn't feed the solver X0 = X+Y  should be X0 = X0 + X1 for example.
 
 C_LANG = Language(tsc.language())
 parser = Parser(C_LANG)
@@ -44,7 +38,7 @@ class SymbolicExecutor:
         self.mapping = {}
         # Counter for generating unique variable identifiers
         self.counter = 0
-        self.condition = {}
+        self.condition = []
         self.current_path_condition = BoolVal(True)
         # Stack to save and restore states for branching
         self.saved_states = []
@@ -77,17 +71,17 @@ class SymbolicExecutor:
             self.counter = state["counter"]
 
             print("State restored.")
-            return state["next_node"]
+            return state["next_state"]
 
         else:
             print("No saved state to restore.")
-            return
+        return
 
     def execute(self, root_node, function):
         # Main entry point to execute the symbolic interpreter on a function
         # Parses all functions from the root node and then begins traversing
         # the specified function node
-        self.Find_Functions(root_node)
+        self.find_functions(root_node)
         node = self.functions[function]
         self.traverse_node(node)
         # Outputs results on paths after execution
@@ -95,7 +89,7 @@ class SymbolicExecutor:
         print("Number of feasible states:", self.SAT)
         print("Number of Target reached:", self.targetReached)
 
-    def Find_Functions(self, node):
+    def find_functions(self, node):
         # Recursive function to locate and store all function definitions
         # within the code tree. Assumes function name is the first child node.
         if node.type == 'function_definition':
@@ -105,7 +99,7 @@ class SymbolicExecutor:
             self.functions[function_name] = node
             print("Function found:", function_name)
         for child in node.children:
-            self.Find_Functions(child)
+            self.find_functions(child)
 
     def traverse_node(self, node):
         # Traverses each node type in the function body and delegates handling
@@ -118,23 +112,24 @@ class SymbolicExecutor:
             expression_text = node.text.decode('utf-8').strip()  # Get the expression text
             if expression_text.endswith('++'):
                 var_name = expression_text[:-2].strip()
-                self.condition[self.mapping[var_name]] = [self.mapping[var_name], '++', 1, False]
+                self.condition.append([self.mapping[var_name][-1], '++', '1', False])
             elif expression_text.endswith('--'):
                 var_name = expression_text[:-2].strip()
-                self.condition[self.mapping[var_name]] = [self.mapping[var_name], '--', 1, False]
-        elif node.type == 'declaration':
+                self.condition.append([self.mapping[var_name][-1], '--', '1', False])
+        elif (node.type == 'declaration') or (node.type =='parameter_declaration'):
             # Declaration node for new variable declarations
             self.handle_declaration(node)
         elif node.type == 'assignment_expression':
             # Assignment node for updating variable values
             self.handle_assignment(node)
         elif node.type == 'if_statement':
-            # Conditional branching
+            # Conditional branching also we traverse nodes in here, so the next node should be the end of the if statement here
             self.handle_if_statement(node)
-            # we need to change the node here, so we don't traverse the while statement again later.
+            node = node.next_sibling # want to skip ahead, the inside of this "traverse" has been handled in the if function
 
-        # elif node.type == 'while_statement':
-        #     self.handle_while_statement(node)
+        elif node.type == 'while_statement':
+            self.handle_while_statement(node)
+            node = node.next_sibling  # want to skip ahead, the inside of this "traverse" has been handled in the while function
 
         elif node.type == 'return_statement':
             self.handle_return(node)
@@ -147,6 +142,7 @@ class SymbolicExecutor:
 
     def z3_condition_add(self, solver, op, left, right,inv):
         # Applies basic operators in Z3 to form a symbolic expression
+        # fix
         if op == '+':
             solver.add(left + right)
         elif op == '-':
@@ -173,30 +169,34 @@ class SymbolicExecutor:
         elif op == '=':
             solver.add(left == right)
         elif op == '++':
-            solver.add(left + right )
+            solver.add(Int(left) == Int(left) + 1)
         elif op == '--':
-            solver.add(left + right)
+            solver.add(Int(left) == Int(left) - 1)
         return
 
     def check_feasibility(self, condition,inv):
         solver = Solver()
 
-        # fix this needs to be unique vars only
-        # initializing all the variables
-        for identifier in self.mapping:
-            unique_id = Int(identifier)
+
+        for identifier, assignments in self.mapping.items():
+            if assignments:  # Check if there are any assignments in the list
+                # Get the most recent assignment (last item in the list)
+                most_recent_assignment = assignments[-1]
+                unique_id = Int(most_recent_assignment)
+                solver.add(Distinct(unique_id)) # add variables to the solver.
+
 
         # add any previous conditions
         for c in self.condition:
-            op = self.condition[c][1]
-            right = self.condition[c][0]
-            left = self.condition[c][2]
-            inv = self.condition[c][3]
-            self.z3_condition_add(solver, op, left, right,inv)
+                op = c[1]
+                right = c[0]
+                left = c[2]
+                inv = c[3]
+                self.z3_condition_add(solver, op, left, right,inv)
 
         op = condition.children[1].text.decode()
         right = condition.children[0].text.decode()
-        left = condition.children[2].text.decode()
+        left = self.mapping[condition.children[2].text.decode()][-1]
         self.z3_condition_add(solver,op, left, right,inv)
 
         result = solver.check() == sat
@@ -212,13 +212,19 @@ class SymbolicExecutor:
 
         if not dNode.children:
             # create a mapping for example int x: x->X1
-            self.mapping[dNode.text.decode()] = symbolic_var
+            # Initialize the stack for this variable if it doesn't exist
+            self.mapping[dNode.text.decode()] = []
+            # Append the new assignment to the list (stack behavior)
+            self.mapping[dNode.text.decode()].append(symbolic_var)
             print(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
         else:
             # x1-> c[[X1,<,10,False],[X1 = 10]]
 
             var_name = dNode.children[0].text.decode()
-            self.mapping[var_name] = symbolic_var
+            # Initialize the stack for this variable if it doesn't exist
+            self.mapping[var_name] = []
+            # Append the new assignment to the list (stack behavior)
+            self.mapping[var_name].append(symbolic_var)
 
             left = dNode.children[2]
             if left.type == 'call_expression':
@@ -230,9 +236,10 @@ class SymbolicExecutor:
             else:
                 # conditions, operator, right and left side of the variable
                 op = dNode.children[1].text.decode()
-                right = dNode.children[0].text.decode()
+                right = dNode.children[0].text.decode() # we decide later how to handle this side
                 inv = False  # for not conditions only with boolean operators.
-                self.condition[symbolic_var] = [op, right, left.text.decode(), inv]
+
+                self.condition.append([op, right, self.mapping[left.text.decode()][-1], inv])
                 print(f" {dNode.text.decode()} mapped to {symbolic_var}")
 
     def handle_assignment(self, node):
@@ -240,14 +247,14 @@ class SymbolicExecutor:
         # Updates a variable with a new condition
         var_name = node.child_by_field_name('left').text.decode()
         if var_name in self.mapping:
-            symbolic_var = self.mapping[var_name]
+            symbolic_var = self.mapping[var_name][-1] # most recent symbolic var added to the stack for this variable.
 
             # conditions, operator, right and left side of the variable
             op = node.children[1].text.decode()
             right = node.children[0].text.decode()
             left = node.children[2].text.decode()
             inv = False  # for not conditions only with boolean operators.
-            self.condition[symbolic_var] = [op, right, left, inv]
+            self.condition.append([op, right, self.mapping[left][-1], inv])
             print(f"Assigned {var_name} = {node} ")
         else:
             print(f"{var_name} assinging value that hasn't been defined")
@@ -259,21 +266,37 @@ class SymbolicExecutor:
         false_branch = node.child_by_field_name('alternative')
 
         new_condition = condition_node.children[1]
+
         # True branch feasibility check and traversal if feasible
         if self.check_feasibility(new_condition,False):
+            # add the new condition to the branches
+            op = new_condition.children[1].text.decode()
+            right = self.mapping[new_condition.children[0].text.decode()][-1]
+            left = self.mapping[new_condition.children[2].text.decode()][-1]
+            self.condition.append([right,op,left,False])
+
+            print("if statement", new_condition.text.decode())
             self.SAT += 1  # satisfiable condition
-            self.save_state(node.next_sibling())  # save the state and then traverse this branch
+            self.save_state(node.next_sibling)  # save the state and then traverse this branch
             self.traverse_node(true_branch)
-
-
-        elif (self.check_feasibility(new_condition,True)) and (false_branch is not None):
-            self.save_state(node.next_sibling())
-            self.traverse_node(false_branch)
-            self.UnSAT += 1
-
         else:
             self.UnSAT += 1
 
+        # False branch feasibility check and traversal if feasible
+        if (self.check_feasibility(new_condition,True)) and (false_branch is not None):
+            print("Else statement", new_condition.text.decode())
+            # add the new condition to the branches
+            op = new_condition.children[1].text.decode()
+            right = self.mapping[new_condition.children[0].text.decode()][-1] # get symbolic var at this point
+            left = self.mapping[new_condition.children[2].text.decode()][-1]  # get symbolic var at this point
+            self.condition.append([right, op, left, True])
+
+            self.save_state(node.next_sibling)
+            self.traverse_node(false_branch)
+            self.SAT += 1
+
+        else:
+            self.UnSAT += 1
         return
 
     def handle_while_statement(self, node):
@@ -281,32 +304,37 @@ class SymbolicExecutor:
         # and traversing the loop body as long as the condition holds
         condition_node = node.child_by_field_name('condition').children[1]
         body_node = node.child_by_field_name('body')
-
+        self.save_state(node.next_sibling)
         while True:
-            self.save_state()
-            if self.check_feasibility(condition_node):
-                print("Loop condition is UNSAT, breaking")
-                # self.restore_state()
-                break
-            else:
-                print("Loop condition is SAT, continuing")
-                self.traverse_node(body_node)
-                # self.restore_state()
 
-            # Update path condition to prevent infinite loops
-            # self.current_path_condition = And(self.current_path_condition, Not(condition_node))
+            if self.check_feasibility(condition_node,False):
+
+                print("Loop condition is SAT, continuing")
+                self.traverse_node(body_node)  # while it's feasible traverse the node when the nodes done we should go back
+                self.SAT = self.SAT +1
+            else:
+                print("Loop condition is UNSAT, breaking")
+                self.UnSAT = self.UnSAT + 1
+                self.restore_state()  # if it wasn't feasible, we want to pop the state we just added
+                break
+
+
+        return
 
     def handle_return(self, node):
         # Processes return statements, checking if they meet the target condition
         return_value_node = node.child_by_field_name('value')
         if return_value_node is not None:
-            return_value = self.evaluate_expression(return_value_node)
+            return_value = return_value_node
             if return_value == IntVal(1):
                 # Increments target counter if the return value matches target
                 self.targetReached += 1
                 print("Target reached!")
+
             else:
                 print("Non-target return reached")
+        self.restore_state()
+        return # go back to the last branch
 
 
 def main():
