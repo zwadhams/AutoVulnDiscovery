@@ -128,6 +128,8 @@ class SymbolicExecutor:
             elif expression_text.endswith('--'):
                 var_name = expression_text[:-2].strip()
                 self.condition.append([self.mapping[var_name][-1], '--', '1', False])
+            logging.info(f"mapping: {self.mapping}")
+            logging.info(f"condition: {self.condition}")
         elif (node.type == 'declaration') or (node.type =='parameter_declaration'):
             # Declaration node for new variable declarations
             self.handle_declaration(node)
