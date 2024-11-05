@@ -55,6 +55,8 @@ class SymbolicExecutor:
 
         self.solver = Solver()
 
+        self.node_ids = []
+
     def save_state(self,next_node):
         logging.info("")
         logging.info(f"Entered save_state with next_node: {next_node}") 
@@ -119,61 +121,67 @@ class SymbolicExecutor:
         if node is None:
             return
 
-        elif node.type =='update_expression':
-            expression_text = node.text.decode('utf-8').strip()  # Get the expression text
-            logging.info(f"Expression text: {expression_text}")
-            logging.info(f"Node is: {node.id}")
-
-            if expression_text.endswith('++'):
-                logging.info(f"Expression text ends with ++")
-                var_name = expression_text[:-2].strip()
-                current_id = Int(self.mapping[var_name][-1])
-                self.solver.add(Distinct(current_id))  # Add the variable to the solver.
-                self.increment_assignment(var_name)
-                new_current_id = Int(self.mapping[var_name][-1])
-                self.solver.add(Distinct(new_current_id))  # Add the variable to the solver.
-                self.solver.add(new_current_id == current_id + 1)
-                logging.info(f"Added condition to solver: {new_current_id} == {current_id} + 1")
-                node = node.next_sibling  # want to skip ahead, the inside of this "traverse" has been handled in the if function
+        self.node_ids.append(node.id)
+        if node.id not in self.node_ids[:-1]:     
+            if node.type =='update_expression':
+                expression_text = node.text.decode('utf-8').strip()  # Get the expression text
+                logging.info(f"Expression text: {expression_text}")
                 logging.info(f"Node is: {node.id}")
-            elif expression_text.endswith('--'):
-                logging.info(f"Expression text ends with --")
-                logging.info(f"Node is: {node.id}")
-                var_name = expression_text[:-2].strip()
-                current_id = Int(self.mapping[var_name][-1])
-                self.solver.add(Distinct(current_id))  # Add the variable to the solver.
-                self.increment_assignment(var_name)
-                new_current_id = Int(self.mapping[var_name][-1])
-                self.solver.add(Distinct(new_current_id))  # Add the variable to the solver.
-                self.solver.add(new_current_id == current_id - 1)
-                logging.info(f"Added condition to solver: {new_current_id} == {current_id} - 1")
-                node = node.next_sibling
-                logging.info(f"Node is: {node.id}")
-                
 
-            # Log the current state of mapping and condition
-            logging.info(f"mapping: {self.mapping}")
-            logging.info(f"condition: {self.condition}")
-        elif (node.type == 'declaration') or (node.type =='parameter_declaration'):
-            # Declaration node for new variable declarations
-            self.handle_declaration(node)
-        elif node.type == 'assignment_expression':
-            # Assignment node for updating variable values
-            self.handle_assignment(node)
-        elif node.type == 'if_statement':
-            # Conditional branching also we traverse nodes in here, so the next node should be the end of the if statement here
-            self.handle_if_statement(node)
-            node = node.next_sibling # want to skip ahead, the inside of this "traverse" has been handled in the if function
+                if expression_text.endswith('++'):
+                    logging.info(f"Expression text ends with ++")
+                    var_name = expression_text[:-2].strip()
+                    current_id = Int(self.mapping[var_name][-1])
+                    self.solver.add(Distinct(current_id))  # Add the variable to the solver.
+                    self.increment_assignment(var_name)
+                    new_current_id = Int(self.mapping[var_name][-1])
+                    self.solver.add(Distinct(new_current_id))  # Add the variable to the solver.
+                    self.solver.add(new_current_id == current_id + 1)
+                    logging.info(f"Added condition to solver: {new_current_id} == {current_id} + 1")
+                    node = node.next_sibling  # want to skip ahead, the inside of this "traverse" has been handled in the if function
+                    logging.info(f"Node is: {node.id}")
+                elif expression_text.endswith('--'):
+                    logging.info(f"Expression text ends with --")
+                    logging.info(f"Node is: {node.id}")
+                    var_name = expression_text[:-2].strip()
+                    current_id = Int(self.mapping[var_name][-1])
+                    self.solver.add(Distinct(current_id))  # Add the variable to the solver.
+                    self.increment_assignment(var_name)
+                    new_current_id = Int(self.mapping[var_name][-1])
+                    self.solver.add(Distinct(new_current_id))  # Add the variable to the solver.
+                    self.solver.add(new_current_id == current_id - 1)
+                    logging.info(f"Added condition to solver: {new_current_id} == {current_id} - 1")
+                    node = node.next_sibling
+                    logging.info(f"Node is: {node.id}")
+                    
 
-        elif node.type == 'while_statement':
-            self.handle_while_statement(node)
-            node = node.next_sibling  # want to skip ahead, the inside of this "traverse" has been handled in the while function
+                # Log the current state of mapping and condition
+                logging.info(f"mapping: {self.mapping}")
+                logging.info(f"condition: {self.condition}")
+            elif (node.type == 'declaration') or (node.type =='parameter_declaration'):
+                # Declaration node for new variable declarations
+                self.handle_declaration(node)
+            elif node.type == 'assignment_expression':
+                # Assignment node for updating variable values
+                self.handle_assignment(node)
+            elif node.type == 'if_statement':
+                # Conditional branching also we traverse nodes in here, so the next node should be the end of the if statement here
+                self.handle_if_statement(node)
+                node = node.next_sibling # want to skip ahead, the inside of this "traverse" has been handled in the if function
 
-        elif node.type == 'return_statement':
-            self.handle_return(node)
-        else:
-            pass
+            elif node.type == 'while_statement':
+                self.handle_while_statement(node)
+                node = node.next_sibling  # want to skip ahead, the inside of this "traverse" has been handled in the while function
 
+            elif node.type == 'return_statement':
+                self.handle_return(node)
+            else:
+                pass
+
+        
+        logging.info("")
+        logging.info(f"Node is: {node.id}")
+        logging.info("")
         # Recursively traverses child nodes
         for child in node.children:
             self.traverse_node(child)
