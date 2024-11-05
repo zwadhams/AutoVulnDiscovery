@@ -126,14 +126,14 @@ class SymbolicExecutor:
                 var_name = expression_text[:-2].strip()
                 unique_id = Int(self.mapping[var_name][-1])
                 self.solver.add(Distinct(unique_id))  # Add the variable to the solver.
-                self.z3_condition_add([unique_id, '++', '1', False])
+                self.z3_condition_add(self.solver,[unique_id, '++', '1', False])
                 logging.info(f"Added variable to solver: {unique_id}")
 
             elif expression_text.endswith('--'):
                 var_name = expression_text[:-2].strip()
                 unique_id = Int(self.mapping[var_name][-1])
                 self.solver.add(Distinct(unique_id))  # Add the variable to the solver.
-                self.z3_condition_add([unique_id, '--', '1', False])
+                self.z3_condition_add(self.solver,[unique_id, '--', '1', False])
                 logging.info(f"Added variable to solver: {unique_id}")
 
             # Log the current state of mapping and condition
@@ -191,38 +191,37 @@ class SymbolicExecutor:
         # Applies basic operators in Z3 to form a symbolic expression
         # fix
         if op == '+':
-            self.solver.add(left =  right)
+            solver.add(left =  right)
         elif op == '-':
-            self.solver.add(left =  right)
+            solver.add(left =  right)
         elif op == '*':
-            self.solver.add(left = right)
+            solver.add(left = right)
         elif op == '/':
-            self.solver.add(left = right)
+            solver.add(left = right)
 
         # boolean operators
         elif op == '==':
             if inv:
-                self.solver.add(not(left == right))
+                solver.add(not(left == right))
             else:
-                self.solver.add(left == right)
+                solver.add(left == right)
         elif op == '<':
             if inv:
-                self.solver.add(not(left<right))
+                solver.add(not(left<right))
             else:
-                self.solver.add(left < right)
+                solver.add(left < right)
         elif op == '>':
             if inv:
-                self.solver.add(z3.Not(left>right))
+                solver.add(z3.Not(left>right))
             else:
-                self.solver.add(left > right)
+                solver.add(left > right)
 
-        elif op == '=':                self.z3_condition_add(self.solver, op, left, right,inv)
-
-            self.solver.add(left == right)
+        elif op == '=':                
+            solver.add(left == right)
         elif op == '++':
-            self.solver.add(Int(left) == Int(left) + 1)
+            solver.add(Int(left) == Int(left) + 1)
         elif op == '--':
-            self.solver.add(Int(left) == Int(left) - 1)
+            solver.add(Int(left) == Int(left) - 1)
         return
 
 
@@ -403,6 +402,8 @@ class SymbolicExecutor:
                 print(f" {dNode.text.decode()} mapped to {symbolic_var}")
             logging.info(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
 
+    
+    
     def handle_assignment(self, node):
         # should only occur when x = something new
         # Updates a variable with a new condition
