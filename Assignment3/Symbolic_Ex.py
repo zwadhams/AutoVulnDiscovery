@@ -243,20 +243,9 @@ class SymbolicExecutor:
         logging.info(f"Added condition to solver: {op} {left} {right} {inv}")
         #self.get_concrete_value()
         logging.info(f"Concret value: {self.get_concrete_value()}")
-        '''for m in self.mapping.items():
-            logging.info("")
-            logging.info(f"Mapping m: {m}")
-            logging.info(f"Mapping m[-1]: {m[1]}")
-            for sv in m[-1]:
-                logging.info(f"Mapping sv: {sv}")
-                unique_id = Int(sv)
-                logging.info(f"Unique_id: {unique_id}")
-                solver.add(Distinct(unique_id)) # add variables to the solver.
-                logging.info(f"Added variable to solver: {unique_id}")'''
-
 
         # add any previous conditions
-        for c in self.condition:
+        '''for c in self.condition:
                 logging.info("")
                 logging.info(f"Condition c: {c}")
                 logging.info(f"Condition c[0]: {c[0]}")
@@ -268,18 +257,7 @@ class SymbolicExecutor:
                 left = c[2]
                 inv = c[3]
                 self.z3_condition_add(self.solver, op, left, right,inv)
-                logging.info(f"Added condition to solver: {op} {left} {right} {inv}")
-
-        '''logging.info("")
-        logging.info("In check_feasibility, misterious condition: ")
-        op = condition.children[1].text.decode()
-        logging.info(f"Condition op: {op}")
-        right = condition.children[0].text.decode()
-        logging.info(f"Condition right: {right}")
-        left = self.mapping[condition.children[2].text.decode()][-1]
-        logging.info(f"Condition left: {left}")
-        self.z3_condition_add(solver,op, left, right,inv)
-        logging.info(f"Added condition to solver: {op} {left} {right} {inv}")'''
+                logging.info(f"Added condition to solver: {op} {left} {right} {inv}")'''
 
         result = self.solver.check() == sat
         return result
@@ -308,9 +286,9 @@ class SymbolicExecutor:
         logging.info(f"Condition left: {left}")
         
         self.z3_condition_add(copied_solver, op, left, right,inv)
-        logging.info(f"Added condition to solver: {op} {left} {right} {inv}")
+        logging.info(f"Added condition to copied solver: {op} {left} {right} {inv}")
         #self.get_concrete_value()
-        logging.info(f"Concret value: {self.get_concrete_value()}")
+        logging.info(f"Concret value for copied solver: {self.get_concrete_value()}")
         '''for m in self.mapping.items():
             logging.info("")
             logging.info(f"Mapping m: {m}")
@@ -457,7 +435,8 @@ class SymbolicExecutor:
         logging.info("Why are we checking the feasibility for the new condition?")
 
         ### Why are we checking the feasibility for the new condition?
-        if self.check_feasibility(new_condition,False):
+        if self.check_feasibility(new_condition,True) == sat:
+            # Constraints have already been added to the solver
             # add the new condition to the branches
             op = new_condition.children[1].text.decode()
             right = self.mapping[new_condition.children[0].text.decode()][-1]

@@ -19,6 +19,7 @@ test(int x) {
   }
   else{
     int i = 1;
+    //x++;
   }
   x++;
   puts("wrong way");
