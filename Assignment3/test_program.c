@@ -11,9 +11,12 @@ f() {
 int
 test(int x) {
   int y = f();
-  //int z = 0;
-  int x = 0;
-  int y = 10;
+  while (x >= y)
+  {
+    puts("zach's test while loop");
+    y++;
+  }
+  
   if (x > y) {
     int i = 0;
   }
@@ -23,7 +26,7 @@ test(int x) {
   }
   x++;
   puts("wrong way");
-  return 1;
+  return 0;
 }
 
 int
