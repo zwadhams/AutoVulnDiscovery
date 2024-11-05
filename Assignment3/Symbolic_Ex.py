@@ -120,14 +120,23 @@ class SymbolicExecutor:
             return
 
         elif node.type =='update_expression':
-            # Handle increment (++) and decrement (--) expressions
             expression_text = node.text.decode('utf-8').strip()  # Get the expression text
+
             if expression_text.endswith('++'):
                 var_name = expression_text[:-2].strip()
-                self.condition.append([self.mapping[var_name][-1], '++', '1', False])
+                unique_id = Int(self.mapping[var_name][-1])
+                self.solver.add(Distinct(unique_id))  # Add the variable to the solver.
+                self.condition.append([unique_id, '++', '1', False])
+                logging.info(f"Added variable to solver: {unique_id}")
+
             elif expression_text.endswith('--'):
                 var_name = expression_text[:-2].strip()
-                self.condition.append([self.mapping[var_name][-1], '--', '1', False])
+                unique_id = Int(self.mapping[var_name][-1])
+                self.solver.add(Distinct(unique_id))  # Add the variable to the solver.
+                self.condition.append([unique_id, '--', '1', False])
+                logging.info(f"Added variable to solver: {unique_id}")
+
+            # Log the current state of mapping and condition
             logging.info(f"mapping: {self.mapping}")
             logging.info(f"condition: {self.condition}")
         elif (node.type == 'declaration') or (node.type =='parameter_declaration'):
