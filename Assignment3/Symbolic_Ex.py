@@ -126,14 +126,14 @@ class SymbolicExecutor:
                 var_name = expression_text[:-2].strip()
                 unique_id = Int(self.mapping[var_name][-1])
                 self.solver.add(Distinct(unique_id))  # Add the variable to the solver.
-                self.condition.append([unique_id, '++', '1', False])
+                self.z3_condition_add([unique_id, '++', '1', False])
                 logging.info(f"Added variable to solver: {unique_id}")
 
             elif expression_text.endswith('--'):
                 var_name = expression_text[:-2].strip()
                 unique_id = Int(self.mapping[var_name][-1])
                 self.solver.add(Distinct(unique_id))  # Add the variable to the solver.
-                self.condition.append([unique_id, '--', '1', False])
+                self.z3_condition_add([unique_id, '--', '1', False])
                 logging.info(f"Added variable to solver: {unique_id}")
 
             # Log the current state of mapping and condition
@@ -216,7 +216,8 @@ class SymbolicExecutor:
             else:
                 self.solver.add(left > right)
 
-        elif op == '=':
+        elif op == '=':                self.z3_condition_add(self.solver, op, left, right,inv)
+
             self.solver.add(left == right)
         elif op == '++':
             self.solver.add(Int(left) == Int(left) + 1)
@@ -489,60 +490,22 @@ class SymbolicExecutor:
         # and traversing the loop body as long as the condition holds
         condition_node = node.child_by_field_name('condition').children[1]
         body_node = node.child_by_field_name('body')
-        
-        # Save the state before starting the loop in case we need to break out
         self.save_state(node.next_sibling)
-        
         while True:
-            # Handle constants and variables in the condition
-            left_node = condition_node.children[0]
-            right_node = condition_node.children[2]
-            
-            if left_node.type == 'identifier':
-                left = Int(self.mapping[left_node.text.decode()][-1])
-            else:
-                # Assume it's a constant
-                left = IntVal(int(left_node.text.decode()))
-            
-            if right_node.type == 'identifier':
-                right = Int(self.mapping[right_node.text.decode()][-1])
-            else:
-                # Assume it's a constant
-                right = IntVal(int(right_node.text.decode()))
 
-            # Create a temporary solver to check feasibility
-            temp_solver = self.solver.translate(self.solver.ctx)
-            op = condition_node.children[1].text.decode()
+            if self.check_feasibility(condition_node,False):
 
-            self.z3_condition_add(temp_solver, op, left, right, False)
-            
-            if temp_solver.check() == sat:
                 print("Loop condition is SAT, continuing")
-                
-                # Traverse the loop body
-                self.traverse_node(body_node)
-                self.SAT += 1
-
-                # Update the loop condition to reflect changes made in the body
-                condition_node = node.child_by_field_name('condition').children[1]
-
-                # Update the variable in the loop body if needed
-                var_name = condition_node.children[0].text.decode()
-                if var_name in self.mapping:
-                    current_symbolic_var = self.mapping[var_name][-1]
-                    incremented_value = Int(current_symbolic_var) + 1
-                    self.solver.add(Int(current_symbolic_var) == incremented_value)
-                    print(f"Updated variable {var_name}: {current_symbolic_var} incremented by 1")
-
+                self.traverse_node(body_node)  # while it's feasible traverse the node when the nodes done we should go back
+                self.SAT = self.SAT +1
             else:
                 print("Loop condition is UNSAT, breaking")
-                self.UnSAT += 1
-                self.restore_state()  # Restore the state we saved before the loop
+                self.UnSAT = self.UnSAT + 1
+                self.restore_state()  # if it wasn't feasible, we want to pop the state we just added
                 break
 
+
         return
-
-
 
     def handle_return(self, node):
         logging.info(f"Handling return statement: {node.text.decode()}")
