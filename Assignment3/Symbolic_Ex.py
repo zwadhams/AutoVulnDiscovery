@@ -53,6 +53,8 @@ class SymbolicExecutor:
         # Counter for paths that meet the target condition `return 1;`
         self.targetReached = 0
 
+        self.solver = Solver()
+
     def save_state(self,next_node):
         logging.info("")
         logging.info(f"Entered save_state with next_node: {next_node}") 
@@ -150,56 +152,77 @@ class SymbolicExecutor:
         for child in node.children:
             self.traverse_node(child)
 
+
+    def get_concrete_value(self):
+        logging.info("")
+        logging.info(f"solver.assertions: {self.solver.assertions()}")
+
+        # Solve the constraints
+        result = self.solver.check()
+        logging.info(f"Solver result: {result}")
+        if result == z3.sat:
+            model = self.solver.model()
+            logging.info(f"Model: {model}")
+            print("SAT")
+            print(model)
+            logging.info("")
+            return model
+        elif result == z3.unsat:
+            logging.info("UNSAT")
+            print("UNSAT")
+        else:
+            logging.info("UNKNOWN")
+            print("UNKNOWN")
+        
+
+    
     def z3_condition_add(self, solver, op, left, right,inv):
         # Applies basic operators in Z3 to form a symbolic expression
         # fix
         if op == '+':
-            solver.add(left =  right)
+            self.solver.add(left =  right)
         elif op == '-':
-            solver.add(left =  right)
+            self.solver.add(left =  right)
         elif op == '*':
-            solver.add(left = right)
+            self.solver.add(left = right)
         elif op == '/':
-            solver.add(left = right)
+            self.solver.add(left = right)
 
         # boolean operators
         elif op == '==':
             if inv:
-                solver.add(not(left == right))
+                self.solver.add(not(left == right))
             else:
-                solver.add(left == right)
+                self.solver.add(left == right)
         elif op == '<':
             if inv:
-                solver.add(not(left<right))
+                self.solver.add(not(left<right))
             else:
-                solver.add(left < right)
+                self.solver.add(left < right)
         elif op == '>':
             if inv:
-                solver.add(z3.Not(left>right))
+                self.solver.add(z3.Not(left>right))
             else:
-                solver.add(left > right)
+                self.solver.add(left > right)
 
         elif op == '=':
-            solver.add(left == right)
+            self.solver.add(left == right)
         elif op == '++':
-            solver.add(Int(left) == Int(left) + 1)
+            self.solver.add(Int(left) == Int(left) + 1)
         elif op == '--':
-            solver.add(Int(left) == Int(left) - 1)
+            self.solver.add(Int(left) == Int(left) - 1)
         return
 
 
 
     
-
-
-
-
-    def check_feasibility(self, condition,inv): # condition is new_condition
-        solver = Solver()
+    def else_constraints(self, condition,inv): # condition is new_condition
+        #solver = Solver()
+        #copied_solver = self.solver.translate(self.solver.ctx)
 
         # Why are we looking at all the mappings?
         unique_id = Int(self.mapping[condition.children[0].text.decode()][-1])
-        solver.add(Distinct(unique_id)) # add variables to the solver.
+        self.solver.add(Distinct(unique_id)) # add variables to the solver.
         logging.info(f"Added variable to solver: {unique_id}")
 
         op = condition.children[1].text.decode()
@@ -209,13 +232,15 @@ class SymbolicExecutor:
 
 
         unique_id = Int(self.mapping[condition.children[2].text.decode()][-1])
-        solver.add(Distinct(unique_id)) # add variables to the solver.
+        self.solver.add(Distinct(unique_id)) # add variables to the solver.
         logging.info(f"Added variable to solver: {unique_id}")
         left = unique_id
         logging.info(f"Condition left: {left}")
         
-        self.z3_condition_add(solver,op, left, right,inv)
+        self.z3_condition_add(self.solver, op, left, right,inv)
         logging.info(f"Added condition to solver: {op} {left} {right} {inv}")
+        #self.get_concrete_value()
+        logging.info(f"Concret value: {self.get_concrete_value()}")
         '''for m in self.mapping.items():
             logging.info("")
             logging.info(f"Mapping m: {m}")
@@ -240,7 +265,7 @@ class SymbolicExecutor:
                 right = c[0]
                 left = c[2]
                 inv = c[3]
-                self.z3_condition_add(solver, op, left, right,inv)
+                self.z3_condition_add(self.solver, op, left, right,inv)
                 logging.info(f"Added condition to solver: {op} {left} {right} {inv}")
 
         '''logging.info("")
@@ -254,7 +279,78 @@ class SymbolicExecutor:
         self.z3_condition_add(solver,op, left, right,inv)
         logging.info(f"Added condition to solver: {op} {left} {right} {inv}")'''
 
-        result = solver.check() == sat
+        result = self.solver.check() == sat
+        return result
+
+
+
+    def check_feasibility(self, condition,inv): # condition is new_condition
+        #solver = Solver()
+        copied_solver = self.solver.translate(self.solver.ctx)
+
+        # Why are we looking at all the mappings?
+        unique_id = Int(self.mapping[condition.children[0].text.decode()][-1])
+        copied_solver.add(Distinct(unique_id)) # add variables to the solver.
+        logging.info(f"Added variable to solver: {unique_id}")
+
+        op = condition.children[1].text.decode()
+        logging.info(f"Condition op: {op}")
+        right = unique_id
+        logging.info(f"Condition right: {right}")
+
+
+        unique_id = Int(self.mapping[condition.children[2].text.decode()][-1])
+        copied_solver.add(Distinct(unique_id)) # add variables to the solver.
+        logging.info(f"Added variable to solver: {unique_id}")
+        left = unique_id
+        logging.info(f"Condition left: {left}")
+        
+        self.z3_condition_add(copied_solver, op, left, right,inv)
+        logging.info(f"Added condition to solver: {op} {left} {right} {inv}")
+        #self.get_concrete_value()
+        logging.info(f"Concret value: {self.get_concrete_value()}")
+        '''for m in self.mapping.items():
+            logging.info("")
+            logging.info(f"Mapping m: {m}")
+            logging.info(f"Mapping m[-1]: {m[1]}")
+            for sv in m[-1]:
+                logging.info(f"Mapping sv: {sv}")
+                unique_id = Int(sv)
+                logging.info(f"Unique_id: {unique_id}")
+                solver.add(Distinct(unique_id)) # add variables to the solver.
+                logging.info(f"Added variable to solver: {unique_id}")'''
+
+
+        # add any previous conditions
+        '''for c in self.condition:
+                logging.info("")
+                logging.info(f"Condition c: {c}")
+                logging.info(f"Condition c[0]: {c[0]}")
+                logging.info(f"Condition c[1]: {c[1]}")
+                logging.info(f"Condition c[2]: {c[2]}")
+                logging.info(f"Condition c[3]: {c[3]}")
+                op = c[1]
+                right = c[0]
+                left = c[2]
+                inv = c[3]
+                self.z3_condition_add(copied_solver, op, left, right,inv)
+                logging.info(f"Added condition to solver: {op} {left} {right} {inv}")'''
+
+        '''logging.info("")
+        logging.info("In check_feasibility, misterious condition: ")
+        op = condition.children[1].text.decode()
+        logging.info(f"Condition op: {op}")
+        right = condition.children[0].text.decode()
+        logging.info(f"Condition right: {right}")
+        left = self.mapping[condition.children[2].text.decode()][-1]
+        logging.info(f"Condition left: {left}")
+        self.z3_condition_add(solver,op, left, right,inv)
+        logging.info(f"Added condition to solver: {op} {left} {right} {inv}")'''
+
+        result = self.solver.check() == sat
+        if result == sat:
+            logging.info("Feasible")
+            self.solver = copied_solver
         return result
 
     def handle_declaration(self, node):
@@ -352,7 +448,7 @@ class SymbolicExecutor:
         new_condition = condition_node.children[1]
         logging.info(f"New_condition: {new_condition.text.decode()}")
 
-        logging.info(f"new_condition feasible: {self.check_feasibility(new_condition,False)}")
+        #logging.info(f"new_condition feasible: {self.check_feasibility(new_condition,False)}")
         logging.info("Why are we checking the feasibility for the new condition?")
 
         ### Why are we checking the feasibility for the new condition?
@@ -373,13 +469,13 @@ class SymbolicExecutor:
         else:
             self.UnSAT += 1
 
-        if (false_branch is not None):
-            logging.info("")
-            logging.info("False branch exists")
-            logging.info(f"False branch: {false_branch.text.decode()}") # Contains the else block
-            # False branch feasibility check and traversal if feasible
-            logging.info("checks feasibility for the new condition INVERSE")
-            if (self.check_feasibility(new_condition,True)):
+            if (false_branch is not None):
+                logging.info("")
+                logging.info("False branch exists")
+                logging.info(f"False branch: {false_branch.text.decode()}") # Contains the else block
+                # False branch feasibility check and traversal if feasible
+                logging.info("checks feasibility for the new condition INVERSE")
+                self.else_constraints(new_condition,True)
                 print("Else statement", new_condition.text.decode())
                 # add the new condition to the branches
                 op = new_condition.children[1].text.decode()
@@ -391,8 +487,8 @@ class SymbolicExecutor:
                 self.traverse_node(false_branch)
                 self.SAT += 1
 
-            else:
-                self.UnSAT += 1
+            #else:
+                #self.UnSAT += 1
         return
 
     def handle_while_statement(self, node):
@@ -462,11 +558,12 @@ def main():
 
     # printing out the tree
     root_node = tree.root_node
-    print_tree(root_node)
+    #print_tree(root_node)
     # function_to_execute = args.function
     function_to_execute = 'test'
     executor = SymbolicExecutor()
     executor.execute(root_node, function_to_execute)
+    executor.get_concrete_value()
 
     print("done")
     return

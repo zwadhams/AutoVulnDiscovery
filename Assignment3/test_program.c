@@ -12,6 +12,8 @@ int
 test(int x) {
   int y = f();
   //int z = 0;
+  int x = 0;
+  int y = 10;
   if (x > y) {
     int i = 0;
   }
