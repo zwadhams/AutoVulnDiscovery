@@ -373,14 +373,17 @@ class SymbolicExecutor:
             # Append the new assignment to the list (stack behavior)
             self.mapping[dNode.text.decode()].append(symbolic_var)
             print(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
+            logging.info(f"Mapping: {self.mapping}")
         else:
             logging.info(f"dNode.children: {dNode.children}")
             # x1-> c[[X1,<,10,False],[X1 = 10]]
             var_name = dNode.children[0].text.decode()
             logging.info(f"var_name: {var_name}")
             # Initialize the stack for this variable if it doesn't exist
-            self.mapping[var_name] = []
+            #self.mapping[var_name] = []
             # Append the new assignment to the list (stack behavior)
+            if var_name not in self.mapping:
+                self.mapping[var_name] = []
             self.mapping[var_name].append(symbolic_var)
             logging.info(f"Mapping: {self.mapping}")
 
