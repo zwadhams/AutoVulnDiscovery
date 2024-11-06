@@ -3,10 +3,10 @@ Function found: test
 Function found: main
 Declared variable x mapped to X0
 Declared variable y = f() mapped to X1
+Feasible
 if statement x > y
-State saved.
  i = 0 mapped to X2
-State saved.
+Feasible
 Loop condition is SAT, continuing
 Loop condition is SAT, continuing
 Loop condition is SAT, continuing
@@ -17,34 +17,26 @@ Loop condition is SAT, continuing
 Loop condition is SAT, continuing
 Loop condition is SAT, continuing
 Loop condition is SAT, continuing
+Infeasible
 Loop condition is UNSAT, breaking
-State restored.
 Non-target return reached
-State restored.
+Feasible
 if statement x < y
-State saved.
 Target reached!
 Model eval x: -8
 Model eval y: 0
-State restored.
 Else statement x < y
-State saved.
 Non-target return reached
-State restored.
+Infeasible
 Else statement x == y
-State saved.
+Feasible
 if statement x < y
-State saved.
 Target reached!
 Model eval x: -8
 Model eval y: 0
-State restored.
 Else statement x < y
-State saved.
 Non-target return reached
-State restored.
 Non-target return reached
-State restored.
 Number of infeasible states: 2
 Number of feasible states: 5
 Number of Target reached: 2

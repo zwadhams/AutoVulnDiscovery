@@ -5,24 +5,16 @@ from tree_sitter import Language, Parser
 import os
 import logging
 
-# conditions shouldn't be attached to specific symbolic vars, just left and right sides if left side is an operations do some step.
-# need to updated conditions to handle the left side. so X = X+Y doesn't feed the solver X0 = X+Y  should be X0 = X0 + X1 for example.
-
-#Given conditions reached what was the state at that time
-
 # Initialize logging
 logging.basicConfig(level=logging.INFO)
 
 C_LANG = Language(tsc.language())
 parser = Parser(C_LANG)
 
-
-
 # Example path: Assignment3\test_program.c
 def read_c_code_from_file(file_path):
     with open(file_path, 'rb') as file:
         return file.read()
-
 
 def print_tree(node, indent=""):
     hold = f"{indent}{node.type} "  # [{node.start_point}, {node.end_point}]
@@ -31,62 +23,22 @@ def print_tree(node, indent=""):
         print_tree(child, indent + "  ")
     return
 
-
 class SymbolicExecutor:
     def __init__(self):
-
         # Dictionary to store function nodes, allowing for function calls
         self.functions = {}
         # Maps variable names to their SymbolicVariable instances
         self.mapping = {}
         # Counter for generating unique variable identifiers
         self.counter = 0
-        self.condition = []
-        #self.current_path_condition = BoolVal(True)
-        # Stack to save and restore states for branching
-        self.saved_states = []
         # Counters to track feasible and infeasible paths
         self.SAT = 0
         self.UnSAT = 0
         # Counter for paths that meet the target condition `return 1;`
         self.targetReached = 0
-
         self.solver = Solver()
-
-        self.node_ids = []
         self.while_condition = False
-
-    def save_state(self,next_node):
-        logging.info("")
-        logging.info(f"Entered save_state with next_node: {next_node}") 
-        # Saves the current state by storing the path condition,
-        # variable mappings, and counter in the saved states stack.
-        state = {
-            "conditions": self.condition,
-            "mapping": self.mapping.copy(),
-            "counter": self.counter,
-            "next_state": next_node
-            # add next state to execute
-        }
-        logging.info(f"State: {state}")
-        self.saved_states.append(state)
-        print("State saved.")
-
-    def restore_state(self):
-        # Restores the last saved state, including the path condition,
-        # variable mappings, and counter.
-        if self.saved_states:
-            state = self.saved_states.pop()
-            self.condition = state["conditions"]
-            self.mapping = state["mapping"]
-            self.counter = state["counter"]
-
-            print("State restored.")
-            return state["next_state"]
-
-        else:
-            print("No saved state to restore.")
-        return
+    
 
     def execute(self, root_node, function):
         # Main entry point to execute the symbolic interpreter on a function
@@ -122,15 +74,9 @@ class SymbolicExecutor:
         logging.info(f"Traversing node: {node.type}")
         if node is None:
             return
-
-        self.node_ids.append(node.id)
-
-
-        #if node.id not in self.node_ids[:-1]:
+        
         if True:
             if node.type =='update_expression':
-                #if node.id not in self.node_ids: 
-                    #self.node_ids.append(node.id) 
                     expression_text = node.text.decode('utf-8').strip()  # Get the expression text
                     logging.info(f"Expression text type: {type(expression_text)}")
                     logging.info(f"Expression text: {expression_text}")
@@ -170,11 +116,8 @@ class SymbolicExecutor:
                         logging.info(f"Added condition to solver: {new_current_id} == {current_id} - 1")
                         node = node.next_sibling
                         logging.info(f"Node is: {node.id}")
-                        
-
-                    # Log the current state of mapping and condition
+                    # Log the current state of mapping 
                     logging.info(f"mapping: {self.mapping}")
-                    logging.info(f"condition: {self.condition}")
             elif (node.type == 'declaration') or (node.type =='parameter_declaration'):
                 # Declaration node for new variable declarations
                 self.handle_declaration(node)
@@ -185,20 +128,13 @@ class SymbolicExecutor:
                 # Conditional branching also we traverse nodes in here, so the next node should be the end of the if statement here
                 self.handle_if_statement(node)
                 node = node.next_sibling # want to skip ahead, the inside of this "traverse" has been handled in the if function
-
             elif node.type == 'while_statement':
                 self.handle_while_statement(node)
                 node = node.next_sibling  # want to skip ahead, the inside of this "traverse" has been handled in the while function
-
             elif node.type == 'return_statement':
                 self.handle_return(node)
             else:
                 pass
-
-        
-        logging.info("")
-        logging.info(f"Node is: {node.id}")
-        logging.info("")
         # Recursively traverses child nodes
         for child in node.children:
             self.traverse_node(child)
@@ -229,8 +165,6 @@ class SymbolicExecutor:
         #logging.info(f"solver.assertions: {solver.assertions()}")
         logging.info(f"Entered z3_condition_add with op: {op}, left: {left}, right: {right}, inv: {inv}")
         # Applies basic operators in Z3 to form a symbolic expression
-        # fix
-        #logging.info(f"solver.assertions: {solver.assertions()}")
         if op == '+':
             solver.add(left =  right)
         elif op == '-':
@@ -252,48 +186,33 @@ class SymbolicExecutor:
             else:
                 solver.add(left < right)
         elif op == '>':
-            logging.info(f"mapping: {self.mapping}")
-            #logging.info(f"solver.assertions elif >: {solver.assertions()}")
             if inv:
                 solver.add(left<=right)
             else:
                 solver.add(left > right)
-                logging.info(f"Added condition to solver: {left} > {right}")
-                #logging.info(f"solver.assertions: {solver.assertions()}")
         elif op == '>=':
 
             if inv:
                 solver.add(left<right)
             else:
                 solver.add(left >= right)
-                logging.info(f"Added condition to solver: {left} > {right}")
-                #logging.info(f"solver.assertions: {solver.assertions()}")
         elif op == '<=':
 
             if inv:
                 solver.add(left > right)
             else:
                 solver.add(left <= right)
-                logging.info(f"Added condition to solver: {left} > {right}")
-                #logging.info(f"solver.assertions: {solver.assertions()}")
 
 
         elif op == '=':                
             solver.add(left == right)
-        '''elif op == '++':
-            solver.add(Int(left) == Int(left) + 1)
-        elif op == '--':
-            solver.add(Int(left) == Int(left) - 1)'''
+        
         return
 
 
 
     
     def else_constraints(self, condition,inv): # condition is new_condition
-        #solver = Solver()
-        #copied_solver = self.solver.translate(self.solver.ctx)
-
-        # Why are we looking at all the mappings?
         unique_id = Int(self.mapping[condition.children[0].text.decode()][-1])
         self.solver.add(Distinct(unique_id)) # add variables to the solver.
         logging.info(f"Added variable to solver: {unique_id}")
@@ -302,7 +221,6 @@ class SymbolicExecutor:
         logging.info(f"Condition op: {op}")
         right = unique_id
         logging.info(f"Condition right: {right}")
-
 
         unique_id = Int(self.mapping[condition.children[2].text.decode()][-1])
         self.solver.add(Distinct(unique_id)) # add variables to the solver.
@@ -313,26 +231,18 @@ class SymbolicExecutor:
         
         self.z3_condition_add(self.solver, op, left, right,inv)
         logging.info(f"Added condition to solver: {op} {left} {right} {inv}")
-        
-        #logging.info(f"Concret value: {self.get_concrete_value()}")
-
 
         result = self.solver.check() == sat
-        #self.SAT += 1
+        
         return result
 
 
 
     def check_feasibility(self, condition,inv): # condition is new_condition
-        logging.info("")
-        logging.info(f"Entered check_feasibility with condition: {condition.text.decode()}")
-        #solver = Solver()
         copied_solver = self.solver.translate(self.solver.ctx)
 
-        # Why are we looking at all the mappings?
         unique_id = Int(self.mapping[condition.children[0].text.decode()][-1])
         copied_solver.add(Distinct(unique_id)) # add variables to the solver.
-        #logging.info(f"solver.assertions: {copied_solver.assertions()}")
         logging.info(f"Added variable to solver: {unique_id}")
 
         op = condition.children[1].text.decode()
@@ -345,34 +255,27 @@ class SymbolicExecutor:
         else:
             right = Int(self.mapping[condition.children[2].text.decode()][-1])
             copied_solver.add(Distinct(right))
-
-        #logging.info(f"solver.assertions: {copied_solver.assertions()}")
         
         logging.info(f"Added variable to solver: {unique_id}")
-
         logging.info(f"Condition right: {right}")
         
         self.z3_condition_add(copied_solver, op, left, right,inv)
-        #logging.info(f"solver.assertions after z3 call: {copied_solver.assertions()}")
         logging.info(f"Added condition to copied solver: {op} {left} {right} {inv}")
-        
-        #logging.info(f"Concret value for copied solver: {self.get_concrete_value()}")
 
         result = copied_solver.check()
         logging.info(f"copied_solver result: {result}")
         if result == sat and self.while_condition == False:
             logging.info("Feasible")
+            print("Feasible")
             self.solver = copied_solver
             self.SAT += 1
         elif result != sat:
             logging.info("Infeasible")
+            print("Infeasible")
             self.UnSAT += 1
         return result
 
     def handle_declaration(self, node):
-        logging.info("")
-        logging.info(f"Handling declaration: {node.text.decode()}")
-        # Just getting the values
         dNode = node.child_by_field_name('declarator')
         logging.info(f"Declarator node: {dNode.text.decode()}")
 
@@ -382,7 +285,6 @@ class SymbolicExecutor:
 
         if not dNode.children:
             logging.info(f"dNode.children: {dNode.children}")
-            
             self.mapping[dNode.text.decode()] = []
             # Append the new assignment to the list (stack behavior)
             self.mapping[dNode.text.decode()].append(symbolic_var)
@@ -390,7 +292,6 @@ class SymbolicExecutor:
             logging.info(f"Mapping: {self.mapping}")
         else:
             logging.info(f"dNode.children: {dNode.children}")
-            # x1-> c[[X1,<,10,False],[X1 = 10]]
             var_name = dNode.children[0].text.decode()
             logging.info(f"var_name: {var_name}")
             
@@ -402,17 +303,14 @@ class SymbolicExecutor:
             right = dNode.children[2]
             if right.type == 'call_expression':
                 logging.info(f"Right: {right.text.decode()}")
-                # this is a function, and we just want this symbolic var to be a generic Int to the solver
-                # later when we feed the mappings to the solver this will happen (Int(symbolic_var))
                 print(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
                 pass
 
             else:
                 logging.info(f"Left: {right.text.decode()}")
-                # conditions, operator, right and left side of the variable
                 op = dNode.children[1].text.decode()
                 logging.info(f"Op: {op}")
-                left = Int(self.mapping[dNode.children[0].text.decode()][-1]) # we decide later how to handle this side
+                left = Int(self.mapping[dNode.children[0].text.decode()][-1]) 
                 logging.info(f"Right: {right}")
                 inv = False
                 if right.type == "number_literal":
@@ -420,22 +318,16 @@ class SymbolicExecutor:
                 else:
                     right_c = Int(self.mapping[dNode.children[2].text.decode()][-1])
                 self.solver.add(left == right_c)
-
-                # for not conditions only with boolean operators.
-                #logging.info(f"self.mapping[left.text.decode()]: {self.mapping[right][-1]}")  
                 right_key = right.text.decode()
                 if right_key in self.mapping:
                     logging.info(f"type of: {type(self.mapping[right_key][-1])}")
                 else:
                     logging.error(f"Key {right_key} not found in mapping")
-                self.condition.append([op, right, left, inv])
                 print(f" {dNode.text.decode()} mapped to {symbolic_var}")
             logging.info(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
 
     
     def increment_assignment(self, var_name):
-        # should only occur when x = something new
-        # Updates a variable with a new condition
         logging.info("")
         logging.info(f"Handling increment assignment: {var_name}")
         if var_name in self.mapping:  
@@ -469,8 +361,6 @@ class SymbolicExecutor:
         else:
             print(f"{var_name} assinging value that hasn't been defined")
         logging.info(f"Assigned {var_name} = {symbolic_var}")
-        # log the contents of conditions list
-        logging.info(f"Conditions: {self.condition}")
 
     def handle_if_statement(self, node):
         logging.info("")
@@ -486,22 +376,10 @@ class SymbolicExecutor:
         new_condition = condition_node.children[1]
         logging.info(f"New_condition: {new_condition.text.decode()}")
 
-        ### Why are we checking the feasibility for the new condition?
         if self.check_feasibility(new_condition,False) == sat:
-            op = new_condition.children[1].text.decode()
-            right = self.mapping[new_condition.children[0].text.decode()][-1]
-            left = self.mapping[new_condition.children[2].text.decode()][-1]
-            self.condition.append([right,op,left,False])
-
             print("if statement", new_condition.text.decode())
-            #self.SAT += 1  # satisfiable condition
-            logging.info("")
-            logging.info(f"node.next_sibling: {node.next_sibling}. Will call save_state")
-            self.save_state(node.next_sibling)  # save the state and then traverse this branch
-            logging.info(f"Will call traverse_node with true_branch")
             self.traverse_node(true_branch)
         else:
-            #self.UnSAT += 1
             pass
 
         if (false_branch is not None):
@@ -512,18 +390,8 @@ class SymbolicExecutor:
             logging.info("checks feasibility for the new condition INVERSE")
             self.else_constraints(new_condition,True)
             print("Else statement", new_condition.text.decode())
-            # add the new condition to the branches
-            op = new_condition.children[1].text.decode()
-            right = self.mapping[new_condition.children[0].text.decode()][-1] # get symbolic var at this point
-            left = self.mapping[new_condition.children[2].text.decode()][-1]  # get symbolic var at this point
-            self.condition.append([right, op, left, True])
-
-            self.save_state(node.next_sibling)
             self.traverse_node(false_branch)
-            #self.SAT += 1
-
         else:
-            #self.UnSAT += 1
             pass
         return
 
@@ -532,7 +400,6 @@ class SymbolicExecutor:
         # and traversing the loop body as long as the condition holds
         condition_node = node.child_by_field_name('condition').children[1]
         body_node = node.child_by_field_name('body')
-        self.save_state(node.next_sibling)
         while True:
             if self.check_feasibility(condition_node,False) == sat:
                 if not self.while_condition:
@@ -543,7 +410,6 @@ class SymbolicExecutor:
             else:
                 print("Loop condition is UNSAT, breaking")
                 self.while_condition = False
-                self.restore_state()  # if it wasn't feasible, we want to pop the state we just added
                 break
 
         return
@@ -563,7 +429,7 @@ class SymbolicExecutor:
 
         else:
             print("Non-target return reached")
-        self.restore_state()
+        
         return # go back to the last branch
 
 
@@ -575,14 +441,6 @@ def main():
     args = parser_args.parse_args()
     # Read C code from the file
     c_code = read_c_code_from_file(args.c_file)
-
-    # Get file path to the c file in question.
-    #current_directory = os.getcwd()
-    #file_name = "test_program.c"
-    #file_path = os.path.join(current_directory, file_name)
-
-    # read in c code
-    #c_code = read_c_code_from_file(file_path)
 
     # parse the code using tree sitter
     tree = parser.parse(c_code)
