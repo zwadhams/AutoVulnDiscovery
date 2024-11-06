@@ -373,28 +373,35 @@ class SymbolicExecutor:
             self.mapping[var_name].append(symbolic_var)
             logging.info(f"Mapping: {self.mapping}")
 
-            left = dNode.children[2]
-            if left.type == 'call_expression':
-                logging.info(f"Left: {left.text.decode()}")
+            right = dNode.children[2]
+            if right.type == 'call_expression':
+                logging.info(f"Right: {right.text.decode()}")
                 # this is a function, and we just want this symbolic var to be a generic Int to the solver
                 # later when we feed the mappings to the solver this will happen (Int(symbolic_var))
                 print(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
                 pass
 
             else:
-                logging.info(f"Left: {left.text.decode()}")
+                logging.info(f"Left: {right.text.decode()}")
                 # conditions, operator, right and left side of the variable
                 op = dNode.children[1].text.decode()
                 logging.info(f"Op: {op}")
-                right = self.mapping[dNode.children[0].text.decode()][-1] # we decide later how to handle this side
+                left = Int(self.mapping[dNode.children[0].text.decode()][-1]) # we decide later how to handle this side
                 logging.info(f"Right: {right}")
-                inv = False  # for not conditions only with boolean operators.
-                #logging.info(f"self.mapping[left.text.decode()]: {self.mapping[right][-1]}")  
-                left_key = left.text.decode()
-                if left_key in self.mapping:
-                    logging.info(f"type of: {type(self.mapping[left_key][-1])}")
+                inv = False
+                if right.type == "number_literal":
+                    right_c = int(right.text.decode())
                 else:
-                    logging.error(f"Key {left_key} not found in mapping")
+                    right_c = Int(self.mapping[dNode.children[2].text.decode()][-1])
+                self.solver.add(left == right_c)
+
+                # for not conditions only with boolean operators.
+                #logging.info(f"self.mapping[left.text.decode()]: {self.mapping[right][-1]}")  
+                right_key = right.text.decode()
+                if right_key in self.mapping:
+                    logging.info(f"type of: {type(self.mapping[right_key][-1])}")
+                else:
+                    logging.error(f"Key {right_key} not found in mapping")
                 self.condition.append([op, right, left, inv])
                 print(f" {dNode.text.decode()} mapped to {symbolic_var}")
             logging.info(f"Declared variable {dNode.text.decode()} mapped to {symbolic_var}")
@@ -426,6 +433,13 @@ class SymbolicExecutor:
             self.counter += 1  # add to counter so ids are unique.
             self.mapping[var_name].append(symbolic_var)
             print(f"Assigned {var_name} = {node} ")
+            right = node.children[2]
+            left = Int(self.mapping[node.children[0].text.decode()][-1])
+            if right.type == "number_literal":
+                right = int(right.text.decode())
+            else:
+                right = Int(self.mapping[node.children[2].text.decode()][-1])
+            self.solver.add(left == right)
         else:
             print(f"{var_name} assinging value that hasn't been defined")
         logging.info(f"Assigned {var_name} = {symbolic_var}")
