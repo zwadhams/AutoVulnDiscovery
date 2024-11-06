@@ -11,15 +11,23 @@ f() {
 int
 test(int x) {
   int y = f();
-  int x = 0;
-  int y = 10;
   if (x > y) {
     int i = 0;
+    
+    if (x == y) {
+      puts("nope");
+      return 0;
+    }else {
+      if (x < y) {
+        // Get here
+        puts("got it!");
+        return 1;
+      } else {
+        puts("not here");
+        return 0;
+      }
+    }
   }
-  else{
-    int i = 1;
-  }
-  --x;
   puts("wrong way");
   return 0;
 }

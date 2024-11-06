@@ -4,9 +4,6 @@ import tree_sitter_c as tsc
 from tree_sitter import Language, Parser
 import os
 import logging
-import time
-
-
 
 # conditions shouldn't be attached to specific symbolic vars, just left and right sides if left side is an operations do some step.
 # need to updated conditions to handle the left side. so X = X+Y doesn't feed the solver X0 = X+Y  should be X0 = X0 + X1 for example.
@@ -222,8 +219,12 @@ class SymbolicExecutor:
 
     
     def z3_condition_add(self, solver, op, left, right,inv):
+        logging.info("")
+        logging.info(f"solver.assertions: {solver.assertions()}")
+        logging.info(f"Entered z3_condition_add with op: {op}, left: {left}, right: {right}, inv: {inv}")
         # Applies basic operators in Z3 to form a symbolic expression
         # fix
+        logging.info(f"solver.assertions: {solver.assertions()}")
         if op == '+':
             solver.add(left =  right)
         elif op == '-':
@@ -236,19 +237,23 @@ class SymbolicExecutor:
         # boolean operators
         elif op == '==':
             if inv:
-                solver.add(not(left == right))
+                solver.add(z3.Not(left==right))
             else:
                 solver.add(left == right)
         elif op == '<':
             if inv:
-                solver.add(not(left<right))
+                solver.add(z3.Not(left<right))
             else:
                 solver.add(left < right)
         elif op == '>':
+            logging.info(f"mapping: {self.mapping}")
+            logging.info(f"solver.assertions elif >: {solver.assertions()}")
             if inv:
                 solver.add(z3.Not(left>right))
             else:
                 solver.add(left > right)
+                logging.info(f"Added condition to solver: {left} > {right}")
+                logging.info(f"solver.assertions: {solver.assertions()}")
 
         elif op == '=':                
             solver.add(left == right)
@@ -278,102 +283,64 @@ class SymbolicExecutor:
 
         unique_id = Int(self.mapping[condition.children[2].text.decode()][-1])
         self.solver.add(Distinct(unique_id)) # add variables to the solver.
+        
         logging.info(f"Added variable to solver: {unique_id}")
         left = unique_id
         logging.info(f"Condition left: {left}")
         
         self.z3_condition_add(self.solver, op, left, right,inv)
         logging.info(f"Added condition to solver: {op} {left} {right} {inv}")
-        #self.get_concrete_value()
+        
         logging.info(f"Concret value: {self.get_concrete_value()}")
 
-        # add any previous conditions
-        '''for c in self.condition:
-                logging.info("")
-                logging.info(f"Condition c: {c}")
-                logging.info(f"Condition c[0]: {c[0]}")
-                logging.info(f"Condition c[1]: {c[1]}")
-                logging.info(f"Condition c[2]: {c[2]}")
-                logging.info(f"Condition c[3]: {c[3]}")
-                op = c[1]
-                right = c[0]
-                left = c[2]
-                inv = c[3]
-                self.z3_condition_add(self.solver, op, left, right,inv)
-                logging.info(f"Added condition to solver: {op} {left} {right} {inv}")'''
 
         result = self.solver.check() == sat
+        self.SAT += 1
         return result
 
 
 
     def check_feasibility(self, condition,inv): # condition is new_condition
+        logging.info("")
+        logging.info(f"Entered check_feasibility with condition: {condition.text.decode()}")
         #solver = Solver()
         copied_solver = self.solver.translate(self.solver.ctx)
 
         # Why are we looking at all the mappings?
         unique_id = Int(self.mapping[condition.children[0].text.decode()][-1])
         copied_solver.add(Distinct(unique_id)) # add variables to the solver.
+        logging.info(f"solver.assertions: {copied_solver.assertions()}")
         logging.info(f"Added variable to solver: {unique_id}")
 
         op = condition.children[1].text.decode()
         logging.info(f"Condition op: {op}")
-        right = unique_id
-        logging.info(f"Condition right: {right}")
+        left = unique_id
+        logging.info(f"Condition left: {left}")
 
 
         unique_id = Int(self.mapping[condition.children[2].text.decode()][-1])
         copied_solver.add(Distinct(unique_id)) # add variables to the solver.
+        logging.info(f"solver.assertions: {copied_solver.assertions()}")
+        
         logging.info(f"Added variable to solver: {unique_id}")
-        left = unique_id
-        logging.info(f"Condition left: {left}")
+        right = unique_id
+        logging.info(f"Condition right: {right}")
         
         self.z3_condition_add(copied_solver, op, left, right,inv)
+        logging.info(f"solver.assertions after z3 call: {copied_solver.assertions()}")
         logging.info(f"Added condition to copied solver: {op} {left} {right} {inv}")
-        #self.get_concrete_value()
-        logging.info(f"Concret value for copied solver: {self.get_concrete_value()}")
-        '''for m in self.mapping.items():
-            logging.info("")
-            logging.info(f"Mapping m: {m}")
-            logging.info(f"Mapping m[-1]: {m[1]}")
-            for sv in m[-1]:
-                logging.info(f"Mapping sv: {sv}")
-                unique_id = Int(sv)
-                logging.info(f"Unique_id: {unique_id}")
-                solver.add(Distinct(unique_id)) # add variables to the solver.
-                logging.info(f"Added variable to solver: {unique_id}")'''
+        
+        #logging.info(f"Concret value for copied solver: {self.get_concrete_value()}")
 
-
-        # add any previous conditions
-        '''for c in self.condition:
-                logging.info("")
-                logging.info(f"Condition c: {c}")
-                logging.info(f"Condition c[0]: {c[0]}")
-                logging.info(f"Condition c[1]: {c[1]}")
-                logging.info(f"Condition c[2]: {c[2]}")
-                logging.info(f"Condition c[3]: {c[3]}")
-                op = c[1]
-                right = c[0]
-                left = c[2]
-                inv = c[3]
-                self.z3_condition_add(copied_solver, op, left, right,inv)
-                logging.info(f"Added condition to solver: {op} {left} {right} {inv}")'''
-
-        '''logging.info("")
-        logging.info("In check_feasibility, misterious condition: ")
-        op = condition.children[1].text.decode()
-        logging.info(f"Condition op: {op}")
-        right = condition.children[0].text.decode()
-        logging.info(f"Condition right: {right}")
-        left = self.mapping[condition.children[2].text.decode()][-1]
-        logging.info(f"Condition left: {left}")
-        self.z3_condition_add(solver,op, left, right,inv)
-        logging.info(f"Added condition to solver: {op} {left} {right} {inv}")'''
-
-        result = self.solver.check() == sat
+        result = copied_solver.check()
+        logging.info(f"copied_solver result: {result}")
         if result == sat:
             logging.info("Feasible")
             self.solver = copied_solver
+            self.SAT += 1
+        else:
+            logging.info("Infeasible")
+            self.UnSAT += 1
         return result
 
     def handle_declaration(self, node):
@@ -389,9 +356,7 @@ class SymbolicExecutor:
 
         if not dNode.children:
             logging.info(f"dNode.children: {dNode.children}")
-            # create a mapping for example int x: x->X1
-            # Initialize the stack for this variable if it doesn't exist
-            #logging.info(f"Check if mapping exist{self.mapping[dNode.text.decode()]}")
+            
             self.mapping[dNode.text.decode()] = []
             # Append the new assignment to the list (stack behavior)
             self.mapping[dNode.text.decode()].append(symbolic_var)
@@ -402,9 +367,7 @@ class SymbolicExecutor:
             # x1-> c[[X1,<,10,False],[X1 = 10]]
             var_name = dNode.children[0].text.decode()
             logging.info(f"var_name: {var_name}")
-            # Initialize the stack for this variable if it doesn't exist
-            #self.mapping[var_name] = []
-            # Append the new assignment to the list (stack behavior)
+            
             if var_name not in self.mapping:
                 self.mapping[var_name] = []
             self.mapping[var_name].append(symbolic_var)
@@ -447,12 +410,6 @@ class SymbolicExecutor:
             symbolic_var = f'X{self.counter}'
             self.counter += 1  # add to counter so ids are unique.
             self.mapping[var_name].append(symbolic_var)
-            # conditions, operator, right and left side of the variable
-            '''op = node.children[1].text.decode()
-            right = node.children[0].text.decode()
-            left = node.children[2].text.decode()
-            inv = False  # for not conditions only with boolean operators.
-            self.condition.append([op, right, self.mapping[left][-1], inv])'''
         else:
             print(f"{var_name} assinging value that hasn't been defined")
         logging.info(f"Assigned {var_name} = {symbolic_var}")
@@ -468,12 +425,6 @@ class SymbolicExecutor:
             symbolic_var = f'X{self.counter}'
             self.counter += 1  # add to counter so ids are unique.
             self.mapping[var_name].append(symbolic_var)
-            # conditions, operator, right and left side of the variable
-            '''op = node.children[1].text.decode()
-            right = node.children[0].text.decode()
-            left = node.children[2].text.decode()
-            inv = False  # for not conditions only with boolean operators.
-            self.condition.append([op, right, self.mapping[left][-1], inv])'''
             print(f"Assigned {var_name} = {node} ")
         else:
             print(f"{var_name} assinging value that hasn't been defined")
@@ -490,18 +441,13 @@ class SymbolicExecutor:
         true_branch = node.child_by_field_name('consequence')
         logging.info(f"True_branch: {true_branch.text.decode()}")
         false_branch = node.child_by_field_name('alternative')
-        logging.info(f"False_branch: {false_branch.text.decode()}")
+        #logging.info(f"False_branch: {false_branch.text.decode()}")
 
         new_condition = condition_node.children[1]
         logging.info(f"New_condition: {new_condition.text.decode()}")
 
-        #logging.info(f"new_condition feasible: {self.check_feasibility(new_condition,False)}")
-        logging.info("Why are we checking the feasibility for the new condition?")
-
         ### Why are we checking the feasibility for the new condition?
-        if self.check_feasibility(new_condition,True) == sat:
-            # Constraints have already been added to the solver
-            # add the new condition to the branches
+        if self.check_feasibility(new_condition,False) == sat:
             op = new_condition.children[1].text.decode()
             right = self.mapping[new_condition.children[0].text.decode()][-1]
             left = self.mapping[new_condition.children[2].text.decode()][-1]
@@ -515,7 +461,7 @@ class SymbolicExecutor:
             logging.info(f"Will call traverse_node with true_branch")
             self.traverse_node(true_branch)
         else:
-            self.UnSAT += 1
+            #self.UnSAT += 1
 
             if (false_branch is not None):
                 logging.info("")
@@ -533,7 +479,7 @@ class SymbolicExecutor:
 
                 self.save_state(node.next_sibling)
                 self.traverse_node(false_branch)
-                self.SAT += 1
+                #self.SAT += 1
 
             #else:
                 #self.UnSAT += 1
@@ -558,7 +504,6 @@ class SymbolicExecutor:
                 self.restore_state()  # if it wasn't feasible, we want to pop the state we just added
                 break
 
-
         return
 
     def handle_return(self, node):
@@ -567,11 +512,7 @@ class SymbolicExecutor:
         number_literal_node = node.children[1]
         number_literal_value = int(number_literal_node.text.decode())
         logging.info(f"Number_literal_value: {number_literal_value}")
-        # Processes return statements, checking if they meet the target condition
-        #return_value_node = node.child_by_field_name('value')
-        #logging.info(f"Return_value_node: {return_value_node.text.decode()}")
-        #if return_value_node is not None:
-            #return_value = return_value_node
+        
         if number_literal_value == IntVal(1):
             # Increments target counter if the return value matches target
             self.targetReached += 1
@@ -616,6 +557,4 @@ def main():
     print("done")
     return
 
-
 main()
-
