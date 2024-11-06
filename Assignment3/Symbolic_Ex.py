@@ -120,7 +120,10 @@ class SymbolicExecutor:
             return
 
         self.node_ids.append(node.id)
-        if node.id not in self.node_ids[:-1]:     
+
+
+        #if node.id not in self.node_ids[:-1]:
+        if True:
             if node.type =='update_expression':
                 expression_text = node.text.decode('utf-8').strip()  # Get the expression text
                 logging.info(f"Expression text type: {type(expression_text)}")
@@ -242,18 +245,35 @@ class SymbolicExecutor:
                 solver.add(left == right)
         elif op == '<':
             if inv:
-                solver.add(z3.Not(left<right))
+                solver.add(left>=right)
             else:
                 solver.add(left < right)
         elif op == '>':
             logging.info(f"mapping: {self.mapping}")
             logging.info(f"solver.assertions elif >: {solver.assertions()}")
             if inv:
-                solver.add(z3.Not(left>right))
+                solver.add(left<=right)
             else:
                 solver.add(left > right)
                 logging.info(f"Added condition to solver: {left} > {right}")
                 logging.info(f"solver.assertions: {solver.assertions()}")
+        elif op == '>=':
+
+            if inv:
+                solver.add(left<right)
+            else:
+                solver.add(left >= right)
+                logging.info(f"Added condition to solver: {left} > {right}")
+                logging.info(f"solver.assertions: {solver.assertions()}")
+        elif op == '<=':
+
+            if inv:
+                solver.add(left > right)
+            else:
+                solver.add(left <= right)
+                logging.info(f"Added condition to solver: {left} > {right}")
+                logging.info(f"solver.assertions: {solver.assertions()}")
+
 
         elif op == '=':                
             solver.add(left == right)
@@ -478,28 +498,28 @@ class SymbolicExecutor:
             logging.info(f"Will call traverse_node with true_branch")
             self.traverse_node(true_branch)
         else:
-            #self.UnSAT += 1
+            self.UnSAT += 1
 
-            if (false_branch is not None):
-                logging.info("")
-                logging.info("False branch exists")
-                logging.info(f"False branch: {false_branch.text.decode()}") # Contains the else block
-                # False branch feasibility check and traversal if feasible
-                logging.info("checks feasibility for the new condition INVERSE")
-                self.else_constraints(new_condition,True)
-                print("Else statement", new_condition.text.decode())
-                # add the new condition to the branches
-                op = new_condition.children[1].text.decode()
-                right = self.mapping[new_condition.children[0].text.decode()][-1] # get symbolic var at this point
-                left = self.mapping[new_condition.children[2].text.decode()][-1]  # get symbolic var at this point
-                self.condition.append([right, op, left, True])
+        if (false_branch is not None) and self.check_feasibility(new_condition,True) == sat:
+            logging.info("")
+            logging.info("False branch exists")
+            logging.info(f"False branch: {false_branch.text.decode()}") # Contains the else block
+            # False branch feasibility check and traversal if feasible
+            logging.info("checks feasibility for the new condition INVERSE")
+            #self.else_constraints(new_condition,True)
+            print("Else statement", new_condition.text.decode())
+            # add the new condition to the branches
+            op = new_condition.children[1].text.decode()
+            right = self.mapping[new_condition.children[0].text.decode()][-1] # get symbolic var at this point
+            left = self.mapping[new_condition.children[2].text.decode()][-1]  # get symbolic var at this point
+            self.condition.append([right, op, left, True])
 
-                self.save_state(node.next_sibling)
-                self.traverse_node(false_branch)
-                #self.SAT += 1
+            self.save_state(node.next_sibling)
+            self.traverse_node(false_branch)
+            self.SAT += 1
 
-            #else:
-                #self.UnSAT += 1
+        else:
+            self.UnSAT += 1
         return
 
     def handle_while_statement(self, node):
@@ -509,9 +529,8 @@ class SymbolicExecutor:
         body_node = node.child_by_field_name('body')
         self.save_state(node.next_sibling)
         while True:
-
+            hold = self.check_feasibility(condition_node, False)
             if self.check_feasibility(condition_node,False) == sat:
-
                 print("Loop condition is SAT, continuing")
                 self.traverse_node(body_node)  # while it's feasible traverse the node when the nodes done we should go back
                 self.SAT = self.SAT +1
