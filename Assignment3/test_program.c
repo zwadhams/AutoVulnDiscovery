@@ -13,11 +13,15 @@ test(int x) {
   int y = f();
   if (x > y) {
     int i = 0;
-    
+    while (i < 10) {
+      x--;
+      i++;
+    }
+
     if (x == y) {
       puts("nope");
       return 0;
-    }else {
+    } else {
       if (x < y) {
         // Get here
         puts("got it!");
@@ -41,4 +45,4 @@ main(int argc, char *argv[]) {
   printf("result: %d\n", result);
 
   return 0;
-}
+}}

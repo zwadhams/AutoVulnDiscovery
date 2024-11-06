@@ -317,13 +317,16 @@ class SymbolicExecutor:
         left = unique_id
         logging.info(f"Condition left: {left}")
 
+        if condition.children[2].type == "number_literal":
+            right = condition.children[2].text.decode()
+        else:
+            right = Int(self.mapping[condition.children[2].text.decode()][-1])
+            copied_solver.add(Distinct(right))
 
-        unique_id = Int(self.mapping[condition.children[2].text.decode()][-1])
-        copied_solver.add(Distinct(unique_id)) # add variables to the solver.
         logging.info(f"solver.assertions: {copied_solver.assertions()}")
         
         logging.info(f"Added variable to solver: {unique_id}")
-        right = unique_id
+
         logging.info(f"Condition right: {right}")
         
         self.z3_condition_add(copied_solver, op, left, right,inv)
@@ -507,7 +510,7 @@ class SymbolicExecutor:
         self.save_state(node.next_sibling)
         while True:
 
-            if self.check_feasibility(condition_node,False):
+            if self.check_feasibility(condition_node,False) == sat:
 
                 print("Loop condition is SAT, continuing")
                 self.traverse_node(body_node)  # while it's feasible traverse the node when the nodes done we should go back
