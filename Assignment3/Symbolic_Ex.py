@@ -4,6 +4,7 @@ import tree_sitter_c as tsc
 from tree_sitter import Language, Parser
 import os
 import logging
+import time
 
 
 
@@ -125,12 +126,19 @@ class SymbolicExecutor:
         if node.id not in self.node_ids[:-1]:     
             if node.type =='update_expression':
                 expression_text = node.text.decode('utf-8').strip()  # Get the expression text
+                logging.info(f"Expression text type: {type(expression_text)}")
                 logging.info(f"Expression text: {expression_text}")
                 logging.info(f"Node is: {node.id}")
 
-                if expression_text.endswith('++'):
-                    logging.info(f"Expression text ends with ++")
-                    var_name = expression_text[:-2].strip()
+                if expression_text.endswith('++') or expression_text.startswith('++'):
+                    if expression_text.startswith('++'):
+                        logging.info(f"Expression text starts with ++")
+                        var_name = expression_text[-1].strip()
+                    else:
+                        logging.info(f"Expression text ends with ++")
+                        var_name = expression_text[:-2].strip()
+                    logging.info(f"mapping[Var name][-1]: {self.mapping[var_name][-1]}")
+                    
                     current_id = Int(self.mapping[var_name][-1])
                     self.solver.add(Distinct(current_id))  # Add the variable to the solver.
                     self.increment_assignment(var_name)
@@ -140,10 +148,13 @@ class SymbolicExecutor:
                     logging.info(f"Added condition to solver: {new_current_id} == {current_id} + 1")
                     node = node.next_sibling  # want to skip ahead, the inside of this "traverse" has been handled in the if function
                     logging.info(f"Node is: {node.id}")
-                elif expression_text.endswith('--'):
-                    logging.info(f"Expression text ends with --")
-                    logging.info(f"Node is: {node.id}")
-                    var_name = expression_text[:-2].strip()
+                elif expression_text.endswith('--') or expression_text.startswith('--'):
+                    if expression_text.startswith('--'):
+                        logging.info(f"Expression text starts with --")
+                        var_name = expression_text[-1].strip()
+                    else:
+                        logging.info(f"Expression text ends with --")
+                        var_name = expression_text[:-2].strip()
                     current_id = Int(self.mapping[var_name][-1])
                     self.solver.add(Distinct(current_id))  # Add the variable to the solver.
                     self.increment_assignment(var_name)
