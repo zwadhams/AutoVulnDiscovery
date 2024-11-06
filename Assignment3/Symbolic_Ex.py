@@ -97,8 +97,11 @@ class SymbolicExecutor:
         self.traverse_node(node)
         # Outputs results on paths after execution
         print("Number of infeasible states:", self.UnSAT)
+        logging.info(f"Number of infeasible states: {self.UnSAT}")
         print("Number of feasible states:", self.SAT)
+        logging.info(f"Number of feasible states: {self.SAT}")
         print("Number of Target reached:", self.targetReached)
+        logging.info(f"Number of Target reached: {self.targetReached}")
 
     def find_functions(self, node):
         # Recursive function to locate and store all function definitions
@@ -203,17 +206,12 @@ class SymbolicExecutor:
 
     def get_concrete_value(self):
         logging.info("")
-        #logging.info(f"solver.assertions: {self.solver.assertions()}")
-
         # Solve the constraints
         result = self.solver.check()
-        #logging.info(f"Solver result: {result}")
         if result == z3.sat:
             model = self.solver.model()
-            #logging.info(f"Model: {model}")
-            #print("SAT")
-            #print(model)
-            #logging.info("")
+            print(f"Model eval x: {model.eval(Int(self.mapping['x'][-1]))}")
+            print(f"Model eval y: {model.eval(Int(self.mapping['y'][-1]))}")
             logging.info(f"Model eval x: {model.eval(Int(self.mapping['x'][-1]))}")
             logging.info(f"Model eval y: {model.eval(Int(self.mapping['y'][-1]))}")
             return model
