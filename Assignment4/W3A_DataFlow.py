@@ -15,7 +15,8 @@ class Instruction:
 def parse_w3a(file_path):
     instructions = []
     # Regular expressions for parsing each type of instruction
-    assign_const_re = re.compile(r"(\w+)\s*:=\s*(\d+)")
+    line_number_re = re.compile(r"^(\d+):\s*(.*)$")
+    assign_const_re = re.compile(r"(\w+)\s*:=\s*(-?\d+)")
     assign_var_re = re.compile(r"(\w+)\s*:=\s*(\w+)")
     binary_op_re = re.compile(r"(\w+)\s*:=\s*(\w+)\s*([+\-*/])\s*(\w+)")
     goto_re = re.compile(r"goto\s+(\d+)")
@@ -24,53 +25,60 @@ def parse_w3a(file_path):
 
     # Open the file and parse line by line
     with open(file_path, 'r') as file:
-        for line_num, line in enumerate(file, 1):
+        for line in file:
             line = line.strip()
             if not line:
                 continue
 
+            # Extract the line number and instruction
+            match = line_number_re.match(line)
+            if not match:
+                raise SyntaxError(f"Invalid format for line: {line}")
+            line_num, instruction = match.groups()
+            line_num = int(line_num)
+
             # Check for halt
-            if halt_re.match(line):
+            if halt_re.match(instruction):
                 instructions.append(Instruction(line_num, "halt"))
                 continue
 
             # Check for assignment of constant
-            match = assign_const_re.match(line)
+            match = assign_const_re.match(instruction)
             if match:
                 var, const = match.groups()
                 instructions.append(Instruction(line_num, "assign_const", var=var, const=int(const)))
                 continue
 
             # Check for assignment of variable
-            match = assign_var_re.match(line)
+            match = assign_var_re.match(instruction)
             if match:
                 var1, var2 = match.groups()
                 instructions.append(Instruction(line_num, "assign_var", var1=var1, var2=var2))
                 continue
 
             # Check for binary operation
-            match = binary_op_re.match(line)
+            match = binary_op_re.match(instruction)
             if match:
                 var, var1, op, var2 = match.groups()
                 instructions.append(Instruction(line_num, "binary_op", var=var, var1=var1, op=op, var2=var2))
                 continue
 
             # Check for unconditional goto
-            match = goto_re.match(line)
+            match = goto_re.match(instruction)
             if match:
                 target = int(match.group(1))
                 instructions.append(Instruction(line_num, "goto", target=target))
                 continue
 
             # Check for conditional goto
-            match = conditional_goto_re.match(line)
+            match = conditional_goto_re.match(instruction)
             if match:
                 var, cond, target = match.groups()
                 instructions.append(Instruction(line_num, "conditional_goto", var=var, cond=cond, target=int(target)))
                 continue
 
             # If we reach here, the line didn't match any known pattern
-            raise SyntaxError(f"Unrecognized instruction on line {line_num}: {line}")
+            raise SyntaxError(f"Unrecognized instruction on line {line_num}: {instruction}")
 
     return instructions
 
@@ -80,7 +88,7 @@ def main():
     parser_args.add_argument("W3A_file", help="Path to the W3A file to analyze.")
     parser_args.add_argument("function", help="Type of flow function, either signed or reaching")
     args = parser_args.parse_args()
-    
+
     # Parse the file and print the instructions
     parsed_instructions = parse_w3a(args.W3A_file)
     for instr in parsed_instructions:
