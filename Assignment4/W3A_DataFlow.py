@@ -82,6 +82,66 @@ def parse_w3a(file_path):
 
     return instructions
 
+def int_sign_analysis(parsed_instructions):
+    # Abstract domain values: P (positive), N (negative), Z (zero), T (top/unknown)
+    domain = {"P", "N", "Z", "T"}
+    abstract_vals = {}
+    worklist = list(range(len(parsed_instructions)))
+
+    # Initialize all variables to top (T)
+    for instr in parsed_instructions:
+        if instr.instr_type in ["assign_const", "assign_var", "binary_op"]:
+            abstract_vals[instr.details.get("var", "")] = "T"
+            abstract_vals[instr.details.get("var1", "")] = "T"
+            abstract_vals[instr.details.get("var2", "")] = "T"
+
+    # Run the worklist algorithm
+    while worklist:
+        index = worklist.pop(0)
+        instr = parsed_instructions[index]
+
+        old_vals = abstract_vals.copy()
+
+        if instr.instr_type == "assign_const":
+            var = instr.details["var"]
+            const = instr.details["const"]
+            if const > 0:
+                abstract_vals[var] = "P"
+            elif const < 0:
+                abstract_vals[var] = "N"
+            else:
+                abstract_vals[var] = "Z"
+
+        elif instr.instr_type == "assign_var":
+            var1 = instr.details["var1"]
+            var2 = instr.details["var2"]
+            abstract_vals[var1] = abstract_vals[var2]
+
+        elif instr.instr_type == "binary_op":
+            var = instr.details["var"]
+            var1 = instr.details["var1"]
+            var2 = instr.details["var2"]
+            op = instr.details["op"]
+
+            if op in ["+", "-"]:
+                if abstract_vals[var1] == "P" and abstract_vals[var2] == "P":
+                    abstract_vals[var] = "P"
+                elif abstract_vals[var1] == "N" and abstract_vals[var2] == "N":
+                    abstract_vals[var] = "N"
+                else:
+                    abstract_vals[var] = "T"
+            else:  # Assume * or /
+                abstract_vals[var] = "T"  # For simplicity
+
+        if old_vals != abstract_vals:
+            worklist.extend(range(index + 1, len(parsed_instructions)))
+
+        # Print the current state
+        print(f"instr | worklist | abstract val\n{index} | {', '.join(map(str, worklist))} | {abstract_vals}")
+
+def reaching_def_analysis(parsed_instructions): 
+
+    return
 
 def main():
     parser_args = argparse.ArgumentParser(description="Give a W3A file and either signed or reaching for analysis type (ex: python W3A_DataFlow.py prog_1.w3a reaching)")
@@ -91,8 +151,16 @@ def main():
 
     # Parse the file and print the instructions
     parsed_instructions = parse_w3a(args.W3A_file)
+    print("Parsing program")
     for instr in parsed_instructions:
         print(instr)
+
+    if args.function == "signed":
+        print("Performing Integer Sign Analysis....")
+        int_sign_analysis(parsed_instructions)
+    elif args.function == "reaching":
+        print("Performing Reaching Definitions Analysis....")
+        reaching_def_analysis(parsed_instructions)
 
     return
 
