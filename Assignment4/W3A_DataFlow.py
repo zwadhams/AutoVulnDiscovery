@@ -83,7 +83,7 @@ def parse_w3a(file_path):
     return instructions
 
 def int_sign_analysis(parsed_instructions):
-    # Abstract domain values: P (positive), N (negative), Z (zero), T (top/unknown)
+    # Abstract domain values: P (positive), N (negative), Z (zero), T (top)
     domain = {"P", "N", "Z", "T"}
     abstract_vals = {}
     worklist = list(range(len(parsed_instructions)))
