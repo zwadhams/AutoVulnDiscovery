@@ -2,19 +2,18 @@
 from bcc import BPF
 
 program = r"""
-int hello(struct pt_regs *ctx) {
- bpf_trace_printk("Hello World!");
+int trace_main(struct pt_regs *ctx) {
+ bpf_trace_printk("main called!\\n");
  return 0;
 }
 """
 # Initialize BPF
 b = BPF(text=program)
-
 # Attach to the symbol `my_function` in the `test` binary
-binary_path = "/home/semester/semester_project/hello"
-symbol = "hello_world"
+binary_path = "./hello"
+symbol = "main"
 syscall = b.get_syscall_fnname("execve")
-b.attach_uprobe(name=binary_path, sym=symbol, fn_name="hello")
+b.attach_uprobe(name=binary_path, sym=symbol, fn_name="trace_main")
 
 # Print trace output
 print("Tracing my_function. Run your program. Hit Ctrl+C to stop.")
