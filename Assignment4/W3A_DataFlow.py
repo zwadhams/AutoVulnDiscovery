@@ -83,21 +83,26 @@ def parse_w3a(file_path):
     return instructions
 
 def int_sign_analysis(parsed_instructions):
-    # Abstract domain values: P (positive), N (negative), Z (zero), T (top)
-    domain = {"P", "N", "Z", "T"}
+    # Abstract domain values: P (positive), N (negative), Z (zero), T (top/unknown)
     abstract_vals = {}
-    worklist = list(range(len(parsed_instructions)))
+    worklist = list(range(1, len(parsed_instructions) + 1)) # Initialize worklist to start from instruction 1
 
     # Initialize all variables to top (T)
     for instr in parsed_instructions:
         if instr.instr_type in ["assign_const", "assign_var", "binary_op"]:
-            abstract_vals[instr.details.get("var", "")] = "T"
-            abstract_vals[instr.details.get("var1", "")] = "T"
-            abstract_vals[instr.details.get("var2", "")] = "T"
+            for var in [instr.details.get("var"), instr.details.get("var1"), instr.details.get("var2")]:
+                if var:
+                    abstract_vals[var] = "T"
+
+    # Print the initial state before any iteration
+    worklist_str = ', '.join(map(str, worklist)) if worklist else "empty"
+    abstract_val_str = ', '.join([f"{k}->{v}" for k, v in abstract_vals.items()])
+    print(f"instr | worklist | abstract val\n0 | {worklist_str} | {abstract_val_str}")
 
     # Run the worklist algorithm
+    iteration = 1
     while worklist:
-        index = worklist.pop(0)
+        index = worklist.pop(0) - 1 # Adjust index to match 0-based list indexing
         instr = parsed_instructions[index]
 
         old_vals = abstract_vals.copy()
@@ -133,11 +138,23 @@ def int_sign_analysis(parsed_instructions):
             else:  # Assume * or /
                 abstract_vals[var] = "T"  # For simplicity
 
-        if old_vals != abstract_vals:
-            worklist.extend(range(index + 1, len(parsed_instructions)))
+        elif instr.instr_type == "halt":
+            # Treat halt as an instruction that stops further propagation and ensures all variables are finalized
+            # For simplicity, halt will finalize variables, meaning their values will not be updated further
+            worklist.clear()  # Clear the worklist as execution halts here
 
-        # Print the current state
-        print(f"instr | worklist | abstract val\n{index} | {', '.join(map(str, worklist))} | {abstract_vals}")
+        if old_vals != abstract_vals:
+            # Add successors of the current instruction to the worklist
+            for successor in range(index + 1, len(parsed_instructions)):
+                if successor not in worklist:
+                    worklist.append(successor + 1)
+
+        # Print the current state after each iteration
+        worklist_str = ', '.join(map(str, worklist)) if worklist else "empty"
+        abstract_val_str = ', '.join([f"{k}->{v}" for k, v in abstract_vals.items()])
+        print(f"instr | worklist | abstract val\n{iteration} | {worklist_str} | {abstract_val_str}")
+        iteration += 1
+
 
 def reaching_def_analysis(parsed_instructions): 
 
