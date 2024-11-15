@@ -139,14 +139,13 @@ def int_sign_analysis(parsed_instructions):
                 abstract_vals[var] = "T"  # For simplicity
 
         elif instr.instr_type == "halt":
-            # Treat halt as an instruction that stops further propagation and ensures all variables are finalized
             # For simplicity, halt will finalize variables, meaning their values will not be updated further
             worklist.clear()  # Clear the worklist as execution halts here
 
         if old_vals != abstract_vals:
             # Add successors of the current instruction to the worklist
             for successor in range(index + 1, len(parsed_instructions)):
-                if successor not in worklist:
+                if (successor + 1) not in worklist:
                     worklist.append(successor + 1)
 
         # Print the current state after each iteration
