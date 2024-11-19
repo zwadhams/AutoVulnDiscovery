@@ -20,7 +20,7 @@ def parse_w3a(file_path):
     assign_var_re = re.compile(r"(\w+)\s*:=\s*(\w+)")
     binary_op_re = re.compile(r"(\w+)\s*:=\s*(\w+)\s*([+\-*/])\s*(\w+)")
     goto_re = re.compile(r"goto\s+(\d+)")
-    conditional_goto_re = re.compile(r"if\s+(\w+)\s*([<>=!]+)\s*0\s*:\s*goto\s+(\d+)")
+    conditional_goto_re = re.compile(r"if\s+(\w+)\s*([<>=!]+)\s*(-?\d+)\s*goto\s+(\d+)")
     halt_re = re.compile(r"halt")
 
     # Open the file and parse line by line
@@ -73,8 +73,8 @@ def parse_w3a(file_path):
             # Check for conditional goto
             match = conditional_goto_re.match(instruction)
             if match:
-                var, cond, target = match.groups()
-                instructions.append(Instruction(line_num, "conditional_goto", var=var, cond=cond, target=int(target)))
+                var, cond, value, target = match.groups()
+                instructions.append(Instruction(line_num, "conditional_goto", var=var, cond=cond, value=int(value), target=int(target)))
                 continue
 
             # If we reach here, the line didn't match any known pattern
