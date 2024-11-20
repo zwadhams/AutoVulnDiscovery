@@ -5,7 +5,7 @@ TARGET = main
 SRC = main.c
 
 # Default target: Build and execute
-all: $(TARGET) run_uprobe
+all: $(TARGET)
 
 # Compile the target
 $(TARGET): $(SRC)
