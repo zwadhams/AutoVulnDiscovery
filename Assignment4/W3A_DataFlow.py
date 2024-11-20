@@ -17,7 +17,7 @@ def parse_w3a(file_path):
     # Regular expressions for parsing each type of instruction
     line_number_re = re.compile(r"^(\d+):\s*(.*)$")
     assign_const_re = re.compile(r"(\w+)\s*:=\s*(-?\d+)")
-    binary_op_re = re.compile(r"(\w+)\s*:=\s*(\w+)\s*([+\-*/])\s*(\w+)")
+    binary_op_re = re.compile(r"(\w+)\s*:=\s*(\w+)\s*([+\-*/])\s*(-?\d+|\w+)")
     assign_var_re = re.compile(r"(\w+)\s*:=\s*(\w+)")
     goto_re = re.compile(r"goto\s+(\d+)")
     conditional_goto_re = re.compile(r"if\s+(\w+)\s*([<>=!]+)\s*(-?\d+)\s*goto\s+(\d+)")
