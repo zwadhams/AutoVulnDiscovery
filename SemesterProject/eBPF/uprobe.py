@@ -2,7 +2,7 @@
 from bcc import BPF
 import sys
 
-# Validate arguments
+# Validate arguments, it expects binary and the function name"symbol"
 if len(sys.argv) != 3:
     print(f"Usage: {sys.argv[0]} <binary_path> <symbol>")
     sys.exit(1)
