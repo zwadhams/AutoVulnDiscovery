@@ -587,6 +587,12 @@ int main(int argc, char **argv_orig, char **envp) {
   #endif
 
   char **argv = argv_cpy_dup(argc, argv_orig);
+  //Copy args to file
+  FILE *f = fopen("args.txt", "w");
+  for (int i = 0; i < argc; i++) {
+    fprintf(f, "%s\n", argv[i]);
+  }
+  fclose(f);
 
   afl_state_t *afl = calloc(1, sizeof(afl_state_t));
   if (!afl) { FATAL("Could not create afl state"); }

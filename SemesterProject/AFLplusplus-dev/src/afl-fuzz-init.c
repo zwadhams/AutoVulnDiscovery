@@ -3057,7 +3057,7 @@ void check_binary(afl_state_t *afl, u8 *fname) {
 
 #endif                                                       /* ^!__APPLE__ */
 
-  if (!afl->fsrv.qemu_mode && !afl->fsrv.frida_mode && !afl->unicorn_mode &&
+  if (!afl->fsrv.qemu_mode && !afl->fsrv.frida_mode && !afl->fsrv.eBPF_mode && !afl->unicorn_mode &&
 #ifdef __linux__
       !afl->fsrv.nyx_mode &&
 #endif
