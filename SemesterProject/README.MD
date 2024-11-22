@@ -9,13 +9,13 @@ sudo apt update\
 sudo apt install python3-pip\
 pip3 install frida-tools\
 sudo apt-get install -y ninja-build automake autoconf\
-sudo make distrib\
+sudo make distrib
 
 Check if the compilation was successful:\
-./afl-fuzz -O frida_mode --version\
+./afl-fuzz -O frida_mode --version
 
 The /proc/sys/kernel/core_pattern file defines the naming and location of core dumps.\
-AFL++ is warning that your system’s core dump handling configuration (/proc/sys/kernel/core_pattern) may interfere with its ability to detect crashes properly. Here’s what’s happening and how to address it:\
+AFL++ is warning that your system’s core dump handling configuration (/proc/sys/kernel/core_pattern) may interfere with its ability to detect crashes properly. Here’s what’s happening and how to address it:
 
 Explanation\
 AFL++ uses core dumps to detect crashes, but your system is currently configured to send core dumps to an external utility or file path, likely via a pipe (|). This setup delays AFL++ from receiving crash information because it has to wait for the external utility to process the core dump.\
