@@ -5,6 +5,7 @@ The angr directory contains the same files, but compiled without some optimizati
 The AFLplusplus-dev folder contains the AFL++ code. \
 Here are instructions to set up and test AFL++
 
+within the AFLplusplus-dev folder\
 sudo apt update\
 sudo apt install python3-pip\
 pip3 install frida-tools\
