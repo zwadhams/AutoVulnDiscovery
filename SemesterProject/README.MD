@@ -1,10 +1,10 @@
-# Frida Example
+## Frida Example
 The Frida Example directory contains the compiled files necessary for a run of AFL++. <br>
 
-# angr
+## angr
 The angr directory contains the same files, but compiled without some optimizations that stripped function symbols. It contains instructions for installing angr and generating a control flow graph for the afl-fuzz binary.
 
-# AFLplusplus-dev
+## AFLplusplus-dev
 The AFLplusplus-dev folder contains the AFL++ code. \
 Here are instructions to set up and test AFL++
 
@@ -26,5 +26,5 @@ Redirect core dumps (This needs to be done at the start of every terminal sessio
 sudo sh -c 'echo core >/proc/sys/kernel/core_pattern'
 ```
 
-# eBPF
+## eBPF
 Please see README in directory.
