@@ -215,6 +215,7 @@ static void usage(u8 *argv0, int more_help) {
       "  -A            - use binary-only instrumentation (ARM CoreSight mode)\n"
 #endif
       "  -O            - use binary-only instrumentation (FRIDA mode)\n"
+      "  -R            - use binary-only instrumentation (eBPF mode)\n"
 #if defined(__linux__)
       "  -Q            - use binary-only instrumentation (QEMU mode)\n"
       "  -U            - use unicorn-based instrumentation (Unicorn mode)\n"
@@ -1177,6 +1178,19 @@ int main(int argc, char **argv_orig, char **envp) {
 
         afl->fsrv.frida_mode = 1;
         if (get_afl_env("AFL_USE_FASAN")) { afl->fsrv.frida_asan = 1; }
+
+        break;
+
+      case 'R':                                               /* FRIDA mode */
+
+        if (afl->fsrv.eBPF_mode) {
+
+          FATAL("Multiple -R options not supported");
+
+        }
+
+        afl->fsrv.eBPF_mode = 1;
+        //if (get_afl_env("AFL_USE_FASAN")) { afl->fsrv.frida_asan = 1; }
 
         break;
 
