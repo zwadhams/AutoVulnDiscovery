@@ -18,3 +18,9 @@ python -c "import angr; print(angr.__version__)"
 ```
 
 Note: the afl-fuzz and afl-frida-trace.so files in this directory were compiled with less optimizations in order to visualize more function names. The executables in the Frida Example directory should run faster.
+
+angr-management is run with:
+```
+angr-management
+```
+And then you can select the afl-fuzz binary and run the tool with the default configuration. Just hit ok.
