@@ -3,7 +3,7 @@ The Frida Example directory contains the compiled files necessary for a run of A
 The angr directory contains the same files, but compiled without some optimizations that stripped function symbols. It contains instructions for installing angr and generating a control flow graph for the afl-fuzz binary.
 
 The AFLplusplus-dev folder contains the AFL++ code. \
-Here are instructions to set up and test AFL++\
+Here are instructions to set up and test AFL++
 
 sudo apt update\
 sudo apt install python3-pip\
@@ -23,4 +23,4 @@ AFL++ expects core dumps to be handled locally (not redirected to an external ut
 Option 1: Change the core_pattern Temporarily\
 You can adjust the core dump pattern to work locally by setting it to simply core. Run the following command as root:\
 sudo sh -c 'echo core >/proc/sys/kernel/core_pattern'\
-(This needs to be done at the start of every terminal session)\
+(This needs to be done at the start of every terminal session)
