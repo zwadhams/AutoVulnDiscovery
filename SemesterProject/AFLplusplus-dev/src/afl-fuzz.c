@@ -1468,13 +1468,13 @@ int main(int argc, char **argv_orig, char **envp) {
         show_help++;
         break;  // not needed
 
-      case 'R':
+      /*case 'R':
 
         FATAL(
             "Radamsa is now a custom mutator, please use that "
             "(custom_mutators/radamsa/).");
 
-        break;
+        break;*/
 
       default:
         if (!show_help) { show_help = 1; }
