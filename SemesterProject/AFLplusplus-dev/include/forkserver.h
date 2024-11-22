@@ -147,6 +147,8 @@ typedef struct afl_forkserver {
 
   bool frida_mode;                     /* if running in frida mode or not   */
 
+  bool eBPF_mode;                     /* if running in eBPF mode or not   */
+
   bool frida_asan;                    /* if running with asan in frida mode */
 
   bool cs_mode;                      /* if running in CoreSight mode or not */
