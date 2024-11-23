@@ -1,3 +1,5 @@
+The description of this functionality is in the Project Report. Please refer to it.\
+
 Allow core dumps to come to the working directory:
 ```
 sudo sh -c 'echo core >/proc/sys/kernel/core_pattern'
