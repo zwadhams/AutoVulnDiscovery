@@ -18,7 +18,7 @@ sudo make distrib
 ```
 Check if the compilation was successful:
 ```
-./afl-fuzz -O frida_mode --version
+./afl-fuzz --version
 ```
 
 Redirect core dumps (This needs to be done at the start of every terminal session):
