@@ -1,4 +1,4 @@
-The description of this functionality is in the Project Report. Please refer to it.\
+The description of this functionality is in the Project Report. Please refer to it.<br>
 
 Allow core dumps to come to the working directory:
 ```
