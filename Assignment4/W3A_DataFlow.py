@@ -2,6 +2,7 @@ import argparse
 import logging
 import os
 import re
+from lattice import Lattice
 
 class Instruction:
     def __init__(self, line_num, instr_type, **kwargs):
@@ -208,6 +209,9 @@ def main():
     # Parse the file and print the instructions
     parser = Parser(args.W3A_file)
     parsed_instructions = parser.get_instructions()
+
+    lattice = Lattice(args.function)
+    print(lattice.is_less_than_equal("⊥", "T"))  # True
 
     for instr in parsed_instructions:
         print(instr)
