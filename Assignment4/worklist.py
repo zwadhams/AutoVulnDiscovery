@@ -1,9 +1,3 @@
-from sign_analysis_flow_function import IntegerSignAnalysisFlowFunction
-from reachability_flow_function import VariableReachabilityFlowFunction
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-
 class Worklist:
     def __init__(self, instructions, flow_function):
         """
@@ -15,12 +9,13 @@ class Worklist:
         self.worklist = list(range(1, len(instructions) + 1))  # Initialize worklist
         self.input_states = {n: {} for n in range(1, len(instructions) + 1)}  # Input state for each node
         self.output_states = {n: {} for n in range(1, len(instructions) + 1)}  # Output state for each node
-
+        
         # Initialize input state for the entry node (first instruction)
         for instr in instructions:
             for var in {instr.details.get("var"), instr.details.get("var1"), instr.details.get("var2")}:
                 if var:
                     self.input_states[1][var] = self.flow_function.top_value()
+        self.print_initial_state()
 
     def join_states(self, state1, state2):
         """Join two states based on the lattice."""
@@ -65,14 +60,16 @@ class Worklist:
             return []
         else:
             return [n + 1] if n + 1 <= len(self.instructions) else []
+    
+    def print_initial_state(self):
+        # Print the header only once
+        worklist_str = ', '.join(map(str, self.worklist)) if self.worklist else "empty"
+        input_str = ', '.join([f"{k}->{v}" for k, v in self.input_states[1].items()])
+        print(f"{'instr':<5} | {'worklist':<35} | {'abstract val':<30}")
+        print(f"{0:<5} | {worklist_str:<35} | {input_str:<30}")
 
     def debug_iteration(self, iteration, node):
         """Print the current state of the worklist and analysis for debugging."""
         worklist_str = ', '.join(map(str, self.worklist)) if self.worklist else "empty"
-        input_str = ', '.join([f"{k}->{v}" for k, v in self.input_states[node].items()])
-        output_str = ', '.join([f"{k}->{v}" for k, v in self.output_states[node].items()])
-        print(f"Iteration {iteration}, Node {node}")
-        print(f"  Worklist: {worklist_str}")
-        print(f"  Input: {input_str}")
-        print(f"  Output: {output_str}")
-        print("-" * 50)
+        output_str = ' '.join([f"{k}->{v}" for k, v in self.output_states[node].items()])
+        print(f"{iteration:<5} | {worklist_str:<35} | {output_str:<30}")
