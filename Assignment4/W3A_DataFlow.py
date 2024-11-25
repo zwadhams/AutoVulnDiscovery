@@ -3,6 +3,8 @@ from parser import Parser
 from lattice import Lattice
 from cfg import CFG
 from worklist import Worklist
+from sign_analysis_flow_function import IntegerSignAnalysisFlowFunction
+from reachability_flow_function import VariableReachabilityFlowFunction
     
 def int_sign_analysis(parsed_instructions):
     # Abstract domain values: P (positive), N (negative), Z (zero), T (top/unknown)
@@ -146,22 +148,38 @@ def main():
     print(parsed_instructions)
 
     lattice = Lattice(args.function)
-    print(lattice.is_less_than_equal("⊥", "T"))  # True
+    #print(lattice.is_less_than_equal("⊥", "T"))  # True
 
-    for instr in parsed_instructions:
-        print(instr)
+    #for instr in parsed_instructions:
+        #print(instr)
 
     # Create the control flow graph
     cfg = CFG(parsed_instructions)
-    print(cfg.cfg)
-    #worklist_object = Worklist(parsed_instructions, args.function)
-    
+    #print(f"CFG: {cfg.cfg}")
+    # Select the appropriate flow function
     if args.function == "signed":
+        flow_function = IntegerSignAnalysisFlowFunction()
+        #logging.info("Using Integer Sign Analysis Flow Function")
+    elif args.function == "reachability":
+        flow_function = VariableReachabilityFlowFunction()
+    else:
+        raise ValueError(f"Unknown analysis type: {args.function}")
+    
+    #worklist_object = Worklist(parsed_instructions, lattice, cfg, args.function)
+    #worklist_object.run()
+    worklist_object = Worklist(parsed_instructions, flow_function)
+    # Analyze the program 
+    input_states, output_states = worklist_object.analyze()
+    print("Final Input States:", input_states) 
+    print("Final Output States:", output_states)
+
+
+    '''if args.function == "signed":
         print("Performing Integer Sign Analysis....")
         int_sign_analysis(parsed_instructions)
     elif args.function == "reaching":
         print("Performing Reaching Definitions Analysis....")
-        reaching_def_analysis(parsed_instructions)
+        reaching_def_analysis(parsed_instructions)'''
 
     return
 

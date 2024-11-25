@@ -28,6 +28,6 @@ class CFG:
                 cfg[line_num] = []
 
             # Debug: Print the current instruction and its successors
-            print(f"Instruction Line {line_num}: {instr_type}, Successors: {cfg[line_num]}")
+            #print(f"Instruction Line {line_num}: {instr_type}, Successors: {cfg[line_num]}")
 
         return cfg
