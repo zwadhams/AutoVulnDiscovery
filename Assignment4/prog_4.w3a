@@ -1,9 +1,11 @@
-1: y := x
-2: z := 1
-3: if y = 0 goto 7
-4: z := z * y
-5: y := y - 1
-6: goto 3
-7: x := -1
-8: z := y / x
-9: halt
+1: t := 1 
+2: u := -1 
+3: y := x 
+4: z := 1 
+5: if y = 0 goto 9 
+6: z := z * y 
+7: y := y - t 
+8: goto 5 
+9: x := u 
+10: z := y / x 
+11: halt

@@ -1,15 +1,8 @@
 import argparse
 from parser import Parser
 from lattice import Lattice
-
-class Instruction:
-    def __init__(self, line_num, instr_type, **kwargs):
-        self.line_num = line_num
-        self.instr_type = instr_type
-        self.details = kwargs
-
-    def __repr__(self):
-        return f"Line {self.line_num}: {self.instr_type} {self.details}"
+from cfg import CFG
+from worklist import Worklist
     
 def int_sign_analysis(parsed_instructions):
     # Abstract domain values: P (positive), N (negative), Z (zero), T (top/unknown)
@@ -150,6 +143,7 @@ def main():
     # Parse the file and print the instructions
     parser = Parser(args.W3A_file)
     parsed_instructions = parser.get_instructions()
+    print(parsed_instructions)
 
     lattice = Lattice(args.function)
     print(lattice.is_less_than_equal("⊥", "T"))  # True
@@ -157,6 +151,11 @@ def main():
     for instr in parsed_instructions:
         print(instr)
 
+    # Create the control flow graph
+    cfg = CFG(parsed_instructions)
+    print(cfg.cfg)
+    #worklist_object = Worklist(parsed_instructions, args.function)
+    
     if args.function == "signed":
         print("Performing Integer Sign Analysis....")
         int_sign_analysis(parsed_instructions)
