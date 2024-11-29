@@ -17,7 +17,12 @@ This program consits of two parts `trace_function.sh` and `uprobe.py`.
 
 ### Prerequisites
 
-1. Make the script executable: `chmod +x trace_function.sh`
+1. Make sure you have bcc tools installed:
+```
+sudo apt-get install linux-headers-$(uname -r) clang llvm libelf-dev libbpfcc-dev bpfcc-tools python3-bpfcc libclang-dev python3-distutils
+pip install bcc
+```
+2. Make the script executable: `chmod +x trace_function.sh`
 
 ### Description
 
