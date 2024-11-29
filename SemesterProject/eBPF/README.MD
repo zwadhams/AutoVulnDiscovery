@@ -23,7 +23,8 @@ sudo apt-get install linux-headers-$(uname -r) clang llvm libelf-dev libbpfcc-de
 
 pip install bcc
 ```
-2. Make the script executable: `chmod +x trace_function.sh`
+2. The target should be compiled with symbols (the -g option in gcc, for example).
+3. Make the script executable: `chmod +x trace_function.sh`
 
 ### Description
 
