@@ -17,7 +17,7 @@ This program consits of two parts `trace_function.sh` and `uprobe.py`.
 
 ### Prerequisites
 
-1. Make sure you have bcc tools installed. For Ubuntu 24.01 LTS +:
+1. Make sure you have bcc tools installed. For Ubuntu 24.01 LTS:
 ```
 sudo apt-get install linux-headers-$(uname -r) clang llvm libelf-dev libbpfcc-dev bpfcc-tools python3-bpfcc libclang-dev python3-distutils
 
