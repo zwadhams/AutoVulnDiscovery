@@ -1,4 +1,4 @@
-nitial README
+initial README
 
 ### TO RUN
 
