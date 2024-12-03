@@ -1,0 +1,50 @@
+start_time        : 1731991020
+last_update       : 1731991023
+run_time          : 2
+fuzzer_pid        : 11298
+cycles_done       : 0
+cycles_wo_finds   : 0
+time_wo_finds     : 2
+fuzz_time         : 2
+calibration_time  : 0
+cmplog_time       : 0
+sync_time         : 0
+trim_time         : 0
+execs_done        : 2085
+execs_per_sec     : 703.20
+execs_ps_last_min : 0.00
+corpus_count      : 13
+corpus_favored    : 1
+corpus_found      : 12
+corpus_imported   : 0
+corpus_variable   : 0
+max_depth         : 2
+cur_item          : 0
+pending_favs      : 1
+pending_total     : 13
+stability         : 100.00%
+bitmap_cvg        : 0.33%
+saved_crashes     : 1
+saved_hangs       : 0
+last_find         : 1731991022
+last_crash        : 1731991020
+last_hang         : 0
+execs_since_crash : 2035
+exec_timeout      : 20
+slowest_exec_ms   : 0
+peak_rss_mb       : 0
+cpu_affinity      : 0
+edges_found       : 216
+total_edges       : 65536
+var_byte_count    : 0
+havoc_expansion   : 0
+auto_dict_entries : 0
+testcache_size    : 55
+testcache_count   : 13
+testcache_evict   : 0
+afl_banner        : ./fuzz
+afl_version       : ++4.22a
+target_mode       : shmem_testcase deferred 
+command_line      : ./afl-fuzz -O -G 6 -i input -o output -- ./fuzz
+virgin_bytes     : 0[fe] 479[fe] 735[fd] 784[fe] 1227[fd] 1262[bf] 1766[fe] 1825[f3] 1951[fe] 2135[fe] 2332[fb] 2360[fe] 2409[fe] 2526[fe] 2842[fe] 3417[fe] 3900[fd] 3914[fe] 4560[f3] 5072[fe] 5122[f8] 5139[fe] 5682[fb] 7079[f3] 7164[fe] 7615[f9] 7620[fb] 7661[f7] 7682[fe] 8089[fd] 8175[fe] 8586[fb] 8746[fd] 9196[f3] 9265[fe] 9482[f8] 9666[fb] 9975[fe] 10521[fe] 10951[fe] 11975[fe] 12045[fe] 12315[fe] 12636[fe] 12880[f3] 13396[fd] 13630[fc] 13693[fd] 14773[fe] 14830[f8] 15072[f3] 15256[fb] 15386[fe] 15456[fe] 15693[fe] 15741[fe] 16548[f8] 16552[fe] 17358[fe] 17449[f3] 17574[fb] 17626[fe] 18097[fd] 18309[fe] 18336[fe] 18357[fe] 18398[fd] 18583[f3] 18983[fb] 19093[fe] 19289[f3] 19479[f3] 19959[ef] 20032[fe] 20116[f3] 21431[fb] 21449[fe] 21746[fe] 22089[fb] 22302[fe] 22679[fe] 22714[fe] 22937[f8] 23122[f7] 23286[fd] 23345[ef] 23411[fe] 23524[f3] 23617[fc] 24176[fd] 25562[fe] 25588[fe] 25856[fb] 26363[fb] 27634[f3] 28021[fe] 28104[fb] 28449[fc] 29816[fe] 29854[fe] 29964[fe] 29986[f8] 30368[fe] 30795[f8] 31485[fe] 33207[f3] 33217[fe] 33252[f3] 33433[fe] 33584[fe] 33800[fd] 33830[fe] 33905[fd] 34024[fe] 34061[f3] 34804[fd] 34813[fe] 35047[fe] 35116[fe] 35386[fe] 35495[fb] 35496[fe] 35802[fb] 36421[fe] 36648[fb] 37364[f3] 37508[f8] 37634[fe] 37754[fb] 37775[fb] 37934[fe] 38641[fe] 38645[f3] 38696[fd] 38957[fd] 39256[fe] 39448[fe] 39557[fe] 39578[fe] 40165[fe] 40188[fb] 40718[fb] 41398[fe] 41710[f3] 42459[fd] 42626[fe] 42816[fe] 43167[fd] 43419[fe] 43479[fb] 43523[f9] 43670[fb] 44086[fc] 44310[fe] 44562[f7] 44617[f3] 45008[f3] 45314[fd] 45517[fe] 45723[fd] 45830[ef] 46061[fb] 46719[fd] 47085[fe] 47544[fe] 48167[bf] 48219[fe] 49006[f1] 49324[fb] 50087[fb] 50301[fd] 50369[f3] 51263[f8] 51333[fe] 51610[fb] 51857[fe] 51967[f3] 52343[fb] 52503[fe] 53479[fe] 53806[ef] 55088[fb] 55334[fb] 55582[fe] 55747[fe] 56255[fb] 56636[fb] 56735[f9] 57082[fe] 57095[f3] 57390[f3] 57752[f3] 58408[fe] 58597[fb] 58669[fe] 59870[fb] 59995[fb] 60456[fe] 60460[fd] 60675[fb] 60761[fb] 60890[f7] 62364[fe] 63006[fb] 63188[fe] 63330[f8] 63345[fe] 63591[f3] 64386[f3] 64430[f7] 64768[fe] 64841[fe] 65008[fb] 65221[fd] 65299[f3] 65315[fe]
+var_bytes        :

@@ -1,0 +1,45 @@
+Function found: f
+Function found: test
+Function found: main
+Declared variable x mapped to X0
+Declared variable y = f() mapped to X1
+Feasible
+if statement x > y
+ i = 0 mapped to X2
+Feasible
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Loop condition is SAT, continuing
+Infeasible
+Loop condition is UNSAT, breaking
+Non-target return reached
+Feasible
+if statement x < y
+Target reached!
+Model eval x: -8
+Model eval y: 0
+Else statement x < y
+Non-target return reached
+Infeasible
+Else statement x == y
+Feasible
+if statement x < y
+Target reached!
+Model eval x: -8
+Model eval y: 0
+Else statement x < y
+Non-target return reached
+Non-target return reached
+Number of infeasible states: 2
+Number of feasible states: 5
+Number of Target reached: 2
+Model eval x: -8
+Model eval y: 0
+done
