@@ -66,4 +66,4 @@ class IntegerSignAnalysisFlowFunction(FlowFunction):
         else:
             pass
 
-        return new_state
+        return new_state    
