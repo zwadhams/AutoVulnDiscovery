@@ -1,0 +1,10 @@
+instr | worklist                            | abstract val                  
+0     | 1, 2, 3, 4, 5                       | x->T                          
+1     | 2, 3, 4, 5                          | x->Z                          
+2     | 3, 4, 5                             | x->Z                          
+3     | 4, 5                                | x->P                          
+4     | 5, 2                                | x->P                          
+5     | 2                                   | x->Z                          
+6     | 5, 3                                | x->T                          
+7     | 3                                   | x->T                          
+8     | empty                               | x->P                          

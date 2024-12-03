@@ -1,0 +1,20 @@
+instr | worklist                            | abstract val                  
+0     | 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11   | t->T, u->T, y->T, x->T, z->T  
+1     | 2, 3, 4, 5, 6, 7, 8, 9, 10, 11      | t->P u->T y->T x->T z->T      
+2     | 3, 4, 5, 6, 7, 8, 9, 10, 11         | t->P u->N y->T x->T z->T      
+3     | 4, 5, 6, 7, 8, 9, 10, 11            | t->P u->N y->T x->T z->T      
+4     | 5, 6, 7, 8, 9, 10, 11               | t->P u->N y->T x->T z->P      
+5     | 6, 7, 8, 9, 10, 11                  | t->P u->N y->T x->T z->P      
+6     | 7, 8, 9, 10, 11                     | t->P u->N y->T x->T z->N      
+7     | 8, 9, 10, 11                        | t->P u->N y->T x->T z->N      
+8     | 9, 10, 11, 5                        | t->P u->N y->T x->T z->N      
+9     | 10, 11, 5                           | t->P u->N y->T x->N z->P      
+10    | 11, 5                               | t->P u->N y->N x->N z->P      
+11    | 5                                   | t->P u->N y->N x->N z->P      
+12    | 9, 6                                | t->P u->N y->T x->T z->T      
+13    | 6, 10                               | t->P u->N y->T x->N z->T      
+14    | 10, 7                               | t->P u->N y->T x->T z->P      
+15    | 7, 11                               | t->P u->N y->N x->N z->T      
+16    | 11, 8                               | t->P u->N y->T x->T z->T      
+17    | 8                                   | t->P u->N y->N x->N z->T      
+18    | empty                               | t->P u->N y->T x->T z->T      

@@ -1,5 +1,5 @@
 class Worklist:
-    def __init__(self, instructions, flow_function):
+    def __init__(self, instructions, flow_function, flow, file_name):
         """
         :param instructions: List of parsed instructions.
         :param flow_function: Flow function implementing a specific analysis.
@@ -8,6 +8,8 @@ class Worklist:
         self.flow_function = flow_function
         self.worklist = list(range(1, len(instructions) + 1))  # Initialize worklist. 
         # Contains the instruction numbers.
+        self.flow = flow
+        self.file_name = file_name
         self.input_states = {n: {} for n in range(1, len(instructions) + 1)}  # Holds the state 
         # before each instruction executes. Keys are instruction numbers. Values are initialized 
         # to an empty dictionary. Ex for prog2: input_states: {1: {}, 2: {}, 3: {}, 4: {}, 5: {}}
@@ -79,14 +81,17 @@ class Worklist:
             return [n + 1] if n + 1 <= len(self.instructions) else []
     
     def print_initial_state(self):
-        # Print the header only once
-        worklist_str = ', '.join(map(str, self.worklist)) if self.worklist else "empty"
-        input_str = ', '.join([f"{k}->{v}" for k, v in self.input_states[1].items()])
-        print(f"{'instr':<5} | {'worklist':<35} | {'abstract val':<30}")
-        print(f"{0:<5} | {worklist_str:<35} | {input_str:<30}")
+        log_filename = f'analysis_log_{self.flow}_{self.file_name}.txt'
+        with open(log_filename, 'w') as log_file:
+            worklist_str = ', '.join(map(str, self.worklist)) if self.worklist else "empty"
+            input_str = ', '.join([f"{k}->{v}" for k, v in self.input_states[1].items()])
+            log_file.write(f"{'instr':<5} | {'worklist':<35} | {'abstract val':<30}\n")
+            log_file.write(f"{0:<5} | {worklist_str:<35} | {input_str:<30}\n")
+        self.log_filename = log_filename
 
     def debug_iteration(self, iteration, node):
         """Print the current state of the worklist and analysis for debugging."""
-        worklist_str = ', '.join(map(str, self.worklist)) if self.worklist else "empty"
-        output_str = ' '.join([f"{k}->{v}" for k, v in self.output_states[node].items()])
-        print(f"{iteration:<5} | {worklist_str:<35} | {output_str:<30}")
+        with open(self.log_filename, 'a') as log_file:
+            worklist_str = ', '.join(map(str, self.worklist)) if self.worklist else "empty"
+            output_str = ' '.join([f"{k}->{v}" for k, v in self.output_states[node].items()])
+            log_file.write(f"{iteration:<5} | {worklist_str:<35} | {output_str:<30}\n")

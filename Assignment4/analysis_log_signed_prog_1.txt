@@ -1,0 +1,6 @@
+instr | worklist                            | abstract val                  
+0     | 1, 2, 3, 4                          | x->T, y->T                    
+1     | 2, 3, 4                             | x->P y->T                     
+2     | 3, 4                                | x->P y->P                     
+3     | 4                                   | x->T y->P                     
+4     | empty                               | x->T y->P                     

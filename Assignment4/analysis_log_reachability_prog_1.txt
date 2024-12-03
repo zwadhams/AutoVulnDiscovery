@@ -1,0 +1,6 @@
+instr | worklist                            | abstract val                  
+0     | 1, 2, 3, 4                          | x->set(), y->set()            
+1     | 2, 3, 4                             | x->{'x1'} y->set()            
+2     | 3, 4                                | x->{'x1'} y->{'y2'}           
+3     | 4                                   | x->{'x3'} y->{'y2'}           
+4     | empty                               | x->{'x3'} y->{'y2'}           
